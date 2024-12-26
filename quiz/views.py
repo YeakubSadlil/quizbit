@@ -15,11 +15,13 @@ class HomeView(APIView):
             "msg": "This is QuizBit, a MCQ Simulation API!",
             "endpoints":{
                 "register":"/api/register/",
+                "verify otp": "/api/verifiy-otp/",
                 "login":"/api/login/",
                 "question lists":"/api/questionlist/",
                 "question detail": "/api/question-detail/<int:pk>/",
                 "submit answer": "/api/submit-answer/",
-                "user histories": "/api/user_history/" }
+                "user histories": "/api/user_history/"
+                }
         })
 
 def get_tokens(user):
@@ -111,7 +113,7 @@ class QuestionListView(APIView):
     """
     Returns all the questions list in a get method
     """
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
     def get(self,request):
         valid_questions =  models.Questions.objects.filter(is_active=True)
         serializer = serializers.QuestionListSerializer(valid_questions, many=True)
@@ -125,7 +127,7 @@ class QuestionDetailView(APIView):
     """
     Returns a question details with get method
     """
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def get(self,request,pk):
         try:

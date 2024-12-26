@@ -39,7 +39,7 @@ class CategorySerializer(serializers.ModelSerializer):
 class ChoicesSerializer(serializers.ModelSerializer):
     class Meta:
         model = model_file.Choices
-        fields = ['id','solution']  # is_correct (solution) is excluded (not showing) to prevent cheating
+        fields = ['id','option']  # is_correct (solution) is excluded (not showing) to prevent cheating
 
 class QuestionListSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source='category.name', read_only=True)

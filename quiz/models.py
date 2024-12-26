@@ -87,12 +87,12 @@ class Questions(models.Model):
 
 class Choices(models.Model):
     question = models.ForeignKey(Questions,on_delete=models.CASCADE, db_column='question_id')
-    solution = models.TextField(max_length=200)
+    option = models.TextField(max_length=200)
     is_correct = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.solution
+        return self.option
 
 class UserSolutions(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
