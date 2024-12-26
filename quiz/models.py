@@ -13,7 +13,7 @@ class UserManager(BaseUserManager):
             email=self.normalize_email(email),
             name=name,
         )
-
+        user.is_active = False
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -26,6 +26,7 @@ class UserManager(BaseUserManager):
             name=name,
         )
         user.is_admin = True
+        user.is_active = True
         user.save(using=self._db)
         return user
 
@@ -37,8 +38,9 @@ class Users(AbstractBaseUser):
     )
 
     name = models.CharField(max_length=50)
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
+    otp = models.CharField(max_length=6,null=True,blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     objects = UserManager()

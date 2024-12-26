@@ -8,4 +8,5 @@ urlpatterns=[
     path("question-detail/<int:pk>",QuestionDetailView.as_view(),name="QuestionDetail"),
     path("submit-answer/",SubmitAnswerView.as_view(),name="SubmitAnswer"),
     path("user_history/",UserPracticeHistoryView.as_view(),name="UserPracticeHistory"),
+    path("verifiy-otp/",VerifyOTPView.as_view())
 ]

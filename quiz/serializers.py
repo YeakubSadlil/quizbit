@@ -2,10 +2,10 @@ from rest_framework import serializers
 from . import models as model_file
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
-    password2 = serializers.CharField(style={'input_type':'password'})
+    password2 = serializers.CharField(style={'input_type':'password'},write_only=True)
     class Meta:
         model = model_file.Users
-        fields = ['email','name','password','password2']
+        fields = ['email','name','password', 'password2']
         extra_kwargs ={
             'password':{'write_only':True}
         }
@@ -19,6 +19,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop('password2')
         return model_file.Users.objects.create_user(**validated_data)
+
+
+class VerifyOTPSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    otp = serializers.CharField(max_length=6)
 
 class UserLoginSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(max_length=100)

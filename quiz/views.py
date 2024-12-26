@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status,permissions
 from .serializers import UserRegistrationSerializer, UserLoginSerializer
 from . import models,serializers
-
+from .emails import *
 class HomeView(APIView):
     """
     Home view for the root URL
@@ -32,15 +32,61 @@ def get_tokens(user):
 class RegistrationView(APIView):
     def post(self, request):
         serializer = UserRegistrationSerializer(data=request.data)
+
         if serializer.is_valid():
-            user = serializer.save()
-            token = get_tokens(user)
+            email = serializer.validated_data['email']
+            existing_user = models.Users.objects.filter(email=email).first()
+
+            if existing_user and not existing_user.is_active:
+                send_otp_via_email(email)
+
+                return Response({
+                    'msg':'The user is already registered but not verified. A new OTP has been sent to your mail'
+                },status=status.HTTP_200_OK)
+
+            serializer.save()
+            send_otp_via_email(serializer.data['email'])
+
             return Response({
-                'token':token,
-                'msg':'Registration success'
-            },status=status.HTTP_201_CREATED)
+                'msg':'An OTP has been sent to your email. Please check your inbox or spam folder.'
+            },status=status.HTTP_200_OK)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class VerifyOTPView(APIView):
+    def post (self, request):
+        serializer = serializers.VerifyOTPSerializer(data=request.data)
+
+        if serializer.is_valid():
+            email = serializer.validated_data['email']
+            received_otp = serializer.validated_data['otp']
+            user = models.Users.objects.filter(email=email).first()
+
+            # check whether the user exists already and verified
+            if user and user.is_active and user.otp == None:
+                return Response({
+                    'msg': 'The user is already verified. Please log in'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            #check whether the user exists but not verified
+            elif user and not user.is_active and user.otp != None:
+                if user.otp == received_otp:
+                    user.is_active = True      # activate the inactive user
+                    user.otp = None            # clear the otp
+                    user.save()
+                    return Response({
+                        'msg': 'Successfully verified',
+                    },status=status.HTTP_200_OK)
+                else:
+                    return Response({
+                        'msg':'Invalid OTP'
+                    },status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response({
+                    'msg': 'The user is not registered yet. Please register first to get a OTP'
+                }, status=status.HTTP_404_NOT_FOUND)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 class LoginView(APIView):
     def post(self,request):
         serializer = UserLoginSerializer(data=request.data)
@@ -99,7 +145,7 @@ class SubmitAnswerView(APIView):
 
     def post(self, request):
         serializer = serializers.AnswerSubmissionSerializer(data=request.data)
-        print(serializer)
+        # print(serializer)
 
         if serializer.is_valid():
             # Check user has submitted the answer previously
@@ -129,11 +175,11 @@ class UserPracticeHistoryView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     def get(self,request):
         history = models.UserSolutions.objects.filter(user=request.user).distinct('question')
-        no_correct_answers = history.filter(is_correct=True).count()
+        num_correct_answers = history.filter(is_correct=True).count()
         serializer = serializers.UserHistorySerializer(history, many=True)
         # correct_answered =
         return Response({
             'Num of questions attempted':history.count(),
-            'no_correct_answers':no_correct_answers,
+            'num of correct answers':num_correct_answers,
             'question data':serializer.data
         },status=status.HTTP_200_OK)

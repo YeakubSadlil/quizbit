@@ -1,5 +1,8 @@
 from pathlib import Path
 from datetime import timedelta
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -61,11 +64,11 @@ AUTH_USER_MODEL = 'quiz.Users'
 DATABASES = {
 "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "quizbit",
-        'USER': 'postgres',
-        'PASSWORD': 'admin',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST"),
+        "PORT": os.getenv("DB_PORT"),
     }
 }
 
@@ -120,3 +123,10 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=180),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 }
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'seyamsadlil647@gmail.com'
+EMAIL_HOST_PASSWORD = 'impk bipt niax ldfh'

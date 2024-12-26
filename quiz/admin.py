@@ -18,3 +18,5 @@ class ChoicesAdmin(admin.ModelAdmin):
     list_display = ['id','solution','is_correct','question','created_at']
     readonly_fields = ['created_at']
     list_editable = ['solution','is_correct','question']
+
+# @admin.site.register(Users)
