@@ -22,11 +22,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 
 class VerifyOTPSerializer(serializers.Serializer):
-    email = serializers.EmailField()
+    email = serializers.EmailField(max_length=50)
     otp = serializers.CharField(max_length=6)
 
 class UserLoginSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(max_length=100)
+    email = serializers.EmailField(max_length=50)
     class Meta:
         model = model_file.Users
         fields = ['email','password']

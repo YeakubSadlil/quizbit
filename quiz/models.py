@@ -33,12 +33,13 @@ class UserManager(BaseUserManager):
 class Users(AbstractBaseUser):
     email = models.EmailField(
         verbose_name="email address",
-        max_length=255,
+        max_length=50,
         unique=True,
     )
 
     name = models.CharField(max_length=50)
     is_active = models.BooleanField(default=False)
+    is_verified = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
     otp = models.CharField(max_length=6,null=True,blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

@@ -1,3 +1,5 @@
+from distutils.command.register import register
+
 from django.contrib.auth import authenticate
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -65,15 +67,16 @@ class VerifyOTPView(APIView):
             user = models.Users.objects.filter(email=email).first()
 
             # check whether the user exists already and verified
-            if user and user.is_active and user.otp == None:
+            if user and user.is_active and user.is_verified:
                 return Response({
                     'msg': 'The user is already verified. Please log in'
                 }, status=status.HTTP_400_BAD_REQUEST)
 
             #check whether the user exists but not verified
-            elif user and not user.is_active and user.otp != None:
+            elif user and not user.is_active and not user.is_verified :
                 if user.otp == received_otp:
                     user.is_active = True      # activate the inactive user
+                    user.is_verified = True
                     user.otp = None            # clear the otp
                     user.save()
                     return Response({
@@ -95,18 +98,36 @@ class LoginView(APIView):
         if serializer.is_valid():
             email = serializer.data.get("email")
             password = serializer.data.get("password")
-            user = authenticate(email=email,password=password)
-            if user:
-                token = get_tokens(user)
-                return Response({
-                    'token':token,
-                    'msg': "Login Success",
-                    'email': user.email,
-                },status=status.HTTP_200_OK)
-            else:
-                return Response({
-                    'errors':'email or password is incorrect'
-                },status=status.HTTP_401_UNAUTHORIZED)
+            # Djangos defualt "authenticate" is avoided as it returns only the active user
+            # But we need to check OTP unverified and inactive user
+            # user = authenticate(email=email,password=password)
+            # print(user)
+            user = models.Users.objects.filter(email=email).first()
+
+            if user and user.check_password(password):
+                if user.is_active and user.is_verified:
+                    token = get_tokens(user)
+                    return Response({
+                        'token':token,
+                        'msg': "Login Success",
+                        'email': user.email,
+                    },status=status.HTTP_200_OK)
+
+                elif not user.is_active and not user.is_verified:
+                    send_otp_via_email(email)
+                    return Response({
+                        'msg': "The user is already registered but not verified yet. A new OTP has been sent to your mail"
+                    },status=status.HTTP_200_OK)
+
+                elif not user.is_active and user.is_verified:
+                    return Response({
+                        'msg': "The user is blocked. Please contact the authority"
+                    },status=status.HTTP_403_FORBIDDEN)
+
+            return Response({
+                'errors':'email or password is incorrect'
+            },status=status.HTTP_401_UNAUTHORIZED)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class QuestionListView(APIView):
