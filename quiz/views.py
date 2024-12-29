@@ -19,6 +19,7 @@ class HomeView(APIView):
                 "register":"/api/register/",
                 "verify otp": "/api/verifiy-otp/",
                 "login":"/api/login/",
+                "admin data management":"/admin",
                 "question lists":"/api/questionlist/",
                 "question detail": "/api/question-detail/<int:pk>/",
                 "submit answer": "/api/submit-answer/",
