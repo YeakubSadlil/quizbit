@@ -110,7 +110,7 @@ class LoginView(APIView):
                     token = get_tokens(user)
                     return Response({
                         'token':token,
-                        'msg': "Login Success",
+                           'msg': "Login Success",
                         'email': user.email,
                     },status=status.HTTP_200_OK)
 
@@ -133,17 +133,26 @@ class LoginView(APIView):
 
 class QuestionListView(APIView):
     """
-    Returns all the questions list in a get method
+    Returns all the questions list filtered based on difficulty and category (Topic)
     """
     # permission_classes = [permissions.IsAuthenticated]
+
     def get(self,request):
-        valid_questions =  models.Questions.objects.filter(is_active=True)
-        serializer = serializers.QuestionListSerializer(valid_questions, many=True)
+        difficulty = request.query_params.get('difficulty',None)
+        category_id = request.query_params.get('category_id',None)
+        questions = models.Questions.objects.filter(is_active=True)
+
+        if difficulty:
+            questions = questions.filter(is_active=True, difficulty = difficulty)
+        if category_id:
+            questions = questions.filter(is_active=True, category_id = category_id)
+
+        serializer = serializers.QuestionListSerializer(questions,many=True)
 
         return Response({
-            'Total num. of Questions':valid_questions.count(),
-            'All questions':serializer.data
-        },status=status.HTTP_200_OK)
+            'Total num. of Questions': questions.count(),
+            'All questions': serializer.data
+        }, status=status.HTTP_200_OK)
 
 class QuestionDetailView(APIView):
     """
