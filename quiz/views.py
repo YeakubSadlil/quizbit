@@ -1,6 +1,7 @@
 from distutils.command.register import register
 
 from django.contrib.auth import authenticate
+from rest_framework.exceptions import ValidationError
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
@@ -133,12 +134,25 @@ class LoginView(APIView):
 
 class QuestionListView(APIView):
     """
-    Returns all the questions list filtered based on difficulty and category (Topic)
+    Returns all the questions list filtered based on difficulty and category(Topic)
+    - difficulty:(string) Ex: easy, medium, hard
+    - category: (integer) Ex: 1, 5, 3; mapped as Physics, Chemistry ..
     """
     # permission_classes = [permissions.IsAuthenticated]
 
+    def validate_difficulty(self, diff):
+        difficulty_list = {'easy','medium','hard'}
+        if not diff: return None
+
+        if diff.lower() in difficulty_list:
+            return diff.lower()
+        else:
+            raise ValidationError(
+                f"Invalid difficulty. Difficulty must be within : {', '.join(difficulty_list)}"
+            )
+
     def get(self,request):
-        difficulty = request.query_params.get('difficulty',None)
+        difficulty = self.validate_difficulty(request.query_params.get('difficulty'))
         category_id = request.query_params.get('category_id',None)
         questions = models.Questions.objects.filter(is_active=True)
 
