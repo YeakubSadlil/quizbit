@@ -146,27 +146,53 @@ class QuestionListView(APIView):
 
         if diff.lower() in difficulty_list:
             return diff.lower()
-        else:
-            raise ValidationError(
-                f"Invalid difficulty. Difficulty must be within : {', '.join(difficulty_list)}"
-            )
+
+        raise ValidationError(
+            f"Invalid difficulty. Difficulty must be within : {', '.join(difficulty_list)}"
+        )
+
+    def validate_category(self, catg):
+        try:
+            return int(catg) if catg else None
+        except ValueError:
+            raise ValidationError("Category_id must be an integer only")
+
 
     def get(self,request):
-        difficulty = self.validate_difficulty(request.query_params.get('difficulty'))
-        category_id = request.query_params.get('category_id',None)
-        questions = models.Questions.objects.filter(is_active=True)
+        try:
+            difficulty = self.validate_difficulty(request.query_params.get('difficulty'))
+            category_id = self.validate_category(request.query_params.get('category_id'))
 
-        if difficulty:
-            questions = questions.filter(is_active=True, difficulty = difficulty)
-        if category_id:
-            questions = questions.filter(is_active=True, category_id = category_id)
+            if category_id and not models.Question_Category.objects.filter(id=category_id).exists():
+                return Response({
+                    f"category_id with {category_id} does not exist in the database"
+                },status=status.HTTP_404_NOT_FOUND)
 
-        serializer = serializers.QuestionListSerializer(questions,many=True)
+            questions = models.Questions.objects.filter(is_active=True)
 
-        return Response({
-            'Total num. of Questions': questions.count(),
-            'All questions': serializer.data
-        }, status=status.HTTP_200_OK)
+            if difficulty:
+                questions = questions.filter(is_active=True, difficulty = difficulty)
+            if category_id:
+                questions = questions.filter(is_active=True, category_id = category_id)
+
+            serializer = serializers.QuestionListSerializer(questions,many=True)
+
+            return Response({
+                    'Total num. of Questions': questions.count(),
+                    'All questions': serializer.data
+                }, status=status.HTTP_200_OK
+            )
+
+        except ValidationError as e:
+            return Response({
+                'error': str(e),
+                }, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        except Exception as e:
+            return Response({
+                'error':'An unexpected error occurred'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class QuestionDetailView(APIView):
     """
