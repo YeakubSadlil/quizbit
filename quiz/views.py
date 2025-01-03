@@ -1,6 +1,7 @@
 from distutils.command.register import register
 
 from django.contrib.auth import authenticate
+from rest_framework.exceptions import ValidationError
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
@@ -110,7 +111,7 @@ class LoginView(APIView):
                     token = get_tokens(user)
                     return Response({
                         'token':token,
-                        'msg': "Login Success",
+                           'msg': "Login Success",
                         'email': user.email,
                     },status=status.HTTP_200_OK)
 
@@ -133,17 +134,65 @@ class LoginView(APIView):
 
 class QuestionListView(APIView):
     """
-    Returns all the questions list in a get method
+    Returns all the questions list filtered based on difficulty and category(Topic)
+    - difficulty:(string) Ex: easy, medium, hard
+    - category: (integer) Ex: 1, 5, 3; mapped as Physics, Chemistry ..
     """
     # permission_classes = [permissions.IsAuthenticated]
-    def get(self,request):
-        valid_questions =  models.Questions.objects.filter(is_active=True)
-        serializer = serializers.QuestionListSerializer(valid_questions, many=True)
 
-        return Response({
-            'Total num. of Questions':valid_questions.count(),
-            'All questions':serializer.data
-        },status=status.HTTP_200_OK)
+    def validate_difficulty(self, diff):
+        difficulty_list = {'easy','medium','hard'}
+        if not diff: return None
+
+        if diff.lower() in difficulty_list:
+            return diff.lower()
+
+        raise ValidationError(
+            f"Invalid difficulty. Difficulty must be within : {', '.join(difficulty_list)}"
+        )
+
+    def validate_category(self, catg):
+        try:
+            return int(catg) if catg else None
+        except ValueError:
+            raise ValidationError("Category_id must be an integer only")
+
+
+    def get(self,request):
+        try:
+            difficulty = self.validate_difficulty(request.query_params.get('difficulty'))
+            category_id = self.validate_category(request.query_params.get('category_id'))
+
+            if category_id and not models.Question_Category.objects.filter(id=category_id).exists():
+                return Response({
+                    f"category_id with {category_id} does not exist in the database"
+                },status=status.HTTP_404_NOT_FOUND)
+
+            questions = models.Questions.objects.filter(is_active=True)
+
+            if difficulty:
+                questions = questions.filter(is_active=True, difficulty = difficulty)
+            if category_id:
+                questions = questions.filter(is_active=True, category_id = category_id)
+
+            serializer = serializers.QuestionListSerializer(questions,many=True)
+
+            return Response({
+                    'Total num. of Questions': questions.count(),
+                    'All questions': serializer.data
+                }, status=status.HTTP_200_OK
+            )
+
+        except ValidationError as e:
+            return Response({
+                'error': str(e),
+                }, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        except Exception as e:
+            return Response({
+                'error':'An unexpected error occurred'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class QuestionDetailView(APIView):
     """
