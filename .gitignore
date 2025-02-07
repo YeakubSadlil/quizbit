@@ -5,3 +5,4 @@ __pycache__/
 .idea/
 quiz/migrations/
 qodana.yaml
+quiz/test.py

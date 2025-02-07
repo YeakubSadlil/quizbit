@@ -4,9 +4,10 @@ from .views import *
 urlpatterns=[
     path("register/", RegistrationView.as_view(),name='register'),
     path("login/", LoginView.as_view(),name='login'),
-    path("verifiy-otp/",VerifyOTPView.as_view()),
-    path("questionlist/", QuestionListView.as_view(),name='QuestionList'),
+    path("verify-otp/",VerifyOTPView.as_view()),
+    path("question-list/", QuestionListView.as_view(),name='QuestionList'),
     path("question-detail/<int:pk>",QuestionDetailView.as_view(),name="QuestionDetail"),
+    path("quiz/<int:quiz_id>/",StartQuizView.as_view(),name="start_quiz"),
     path("submit-answer/",SubmitAnswerView.as_view(),name="SubmitAnswer"),
     path("user_history/",UserPracticeHistoryView.as_view(),name="UserPracticeHistory")
 ]

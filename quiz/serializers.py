@@ -41,6 +41,16 @@ class ChoicesSerializer(serializers.ModelSerializer):
         model = model_file.Choices
         fields = ['id','option']  # is_correct (solution) is excluded (not showing) to prevent cheating
 
+class QuizSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = model_file.Quiz
+        fields = '__all__'
+
+class QuizSessionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = model_file.QuizSession
+        fields = '__all__'
+
 class QuestionListSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source='category.name', read_only=True)
     options = ChoicesSerializer(source='choices_set', many=True, read_only=True)

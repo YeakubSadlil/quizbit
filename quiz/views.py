@@ -1,12 +1,10 @@
-from distutils.command.register import register
-
 from django.contrib.auth import authenticate
 from rest_framework.exceptions import ValidationError
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
 from rest_framework import status,permissions
-from .serializers import UserRegistrationSerializer, UserLoginSerializer
+from .serializers import UserRegistrationSerializer, UserLoginSerializer, QuizSessionSerializer
 from . import models,serializers
 from .emails import *
 class HomeView(APIView):
@@ -209,6 +207,22 @@ class QuestionDetailView(APIView):
             return Response(
             {'error':'Question not found'},status=status.HTTP_404_NOT_FOUND
             )
+
+class StartQuizView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def get(self,request,quiz_id):
+        try:
+            quiz = models.Quiz.objects.get(id=quiz_id,is_active=True)
+
+            # check if there is an active quiz exam session
+            active_session = models.QuizSession.objects.filter(user=request.user,quiz_id=quiz_id,status='in_progress').first()
+            if active_session:
+                serializer = QuizSessionSerializer(active_session)
+                return Response(serializer.data,status=status.HTTP_200_OK)
+
+
+        except models.Quiz.DoesNotExist:
+            return Response({'error':'quiz not found'},status=status.HTTP_404_NOT_FOUND)
 
 class SubmitAnswerView(APIView):
     """
