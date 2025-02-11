@@ -131,11 +131,12 @@ class QuizSession(models.Model):
     ]
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     quiz_id = models.ForeignKey(Quiz, on_delete=models.CASCADE)
-    status = models.CharField(max_length=50,choices=status_choices)
+    status = models.CharField(max_length=50,choices=status_choices,default='not_started')
     questions = models.ManyToManyField(Questions,through='QuizSessionQuestion')
-    start_time = models.DateTimeField(auto_now_add=True)
+    start_time = models.DateTimeField(null=True, blank=True)
     end_time = models.DateTimeField(null=True, blank=True)
     score = models.IntegerField(null=True,blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def start_quiz(self):
         if self.status == 'not_started':

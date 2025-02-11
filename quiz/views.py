@@ -220,6 +220,12 @@ class StartQuizView(APIView):
                 serializer = QuizSessionSerializer(active_session)
                 return Response(serializer.data,status=status.HTTP_200_OK)
 
+            # create a new quiz session
+            session = models.QuizSession.objects.create(user=request.user,quiz_id=quiz)
+            return Response({
+                'msg':'New quiz is created',
+                'session_id':f'{session.id}'
+            },status=status.HTTP_201_CREATED)
 
         except models.Quiz.DoesNotExist:
             return Response({'error':'quiz not found'},status=status.HTTP_404_NOT_FOUND)
