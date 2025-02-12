@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate
+import random
 from rest_framework.exceptions import ValidationError
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -215,15 +215,30 @@ class StartQuizView(APIView):
             quiz = models.Quiz.objects.get(id=quiz_id,is_active=True)
 
             # check if there is an active quiz exam session
-            active_session = models.QuizSession.objects.filter(user=request.user,quiz_id=quiz_id,status='in_progress').first()
+            active_session = models.QuizSession.objects.filter(user=request.user,quiz_id=quiz,status='in_progress').first()
             if active_session:
                 serializer = QuizSessionSerializer(active_session)
                 return Response(serializer.data,status=status.HTTP_200_OK)
 
             # create a new quiz session
             session = models.QuizSession.objects.create(user=request.user,quiz_id=quiz)
+
+            # retrieve all questions related to the quiz id
+            category_list = quiz.categories.all()
+            question_list = list(models.Questions.objects.filter(category__in=category_list,is_active=True))
+
+            selected_questions = random.sample(question_list,min(quiz.num_questions,len(question_list)))
+
+            for index, question in enumerate(selected_questions):
+                models.QuizSessionQuestion.objects.create(
+                    quiz_session=session,
+                    questions=question,
+                    question_order=index
+                )
+
+            session.start_quiz()
             return Response({
-                'msg':'New quiz is created',
+                'msg':'Quiz has been started',
                 'session_id':f'{session.id}'
             },status=status.HTTP_201_CREATED)
 
