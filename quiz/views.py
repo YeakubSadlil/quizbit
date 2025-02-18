@@ -217,8 +217,13 @@ class StartQuizView(APIView):
             # check if there is an active quiz exam session
             active_session = models.QuizSession.objects.filter(user=request.user,quiz_id=quiz,status='in_progress').first()
             if active_session:
-                serializer = QuizSessionSerializer(active_session)
-                return Response(serializer.data,status=status.HTTP_200_OK)
+                if active_session.is_time_expired():
+                    return Response({
+                        'error':'The previous session is expired'
+                    },status=status.HTTP_400_BAD_REQUEST)
+
+                    serializer = QuizSessionSerializer(active_session)
+                    return Response(serializer.data,status=status.HTTP_200_OK)
 
             # create a new quiz session
             session = models.QuizSession.objects.create(user=request.user,quiz_id=quiz)
