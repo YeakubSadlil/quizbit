@@ -99,13 +99,6 @@ class Choices(models.Model):
     def __str__(self):
         return self.option
 
-class UserSolutions(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    question = models.ForeignKey(Questions,on_delete=models.CASCADE)
-    selected_answer = models.ForeignKey(Choices,on_delete=models.CASCADE)
-    is_correct = models.BooleanField(default=False)
-    answered_at = models.DateTimeField(auto_now_add=True)
-
 # Quiz configuration table
 class Quiz(models.Model):
     title = models.CharField(max_length=250)
@@ -162,3 +155,15 @@ class QuizSessionQuestion(models.Model):
     class Meta:
         ordering = ['question_order']
 
+class UserSolutions(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    question = models.ForeignKey(Questions,on_delete=models.CASCADE)
+    selected_answer = models.ForeignKey(Choices,on_delete=models.CASCADE)
+    is_correct = models.BooleanField(default=False)
+    answered_at = models.DateTimeField(auto_now_add=True)
+    quiz_session = models.ForeignKey(QuizSession, on_delete=models.CASCADE, null=True, blank=True)
+    attempt_types = [
+        ('practice','Practice Mode'),
+        ('quiz','Quiz Exam')
+    ]
+    attempt_type = models.CharField(max_length=20,choices=attempt_types,default='practice')

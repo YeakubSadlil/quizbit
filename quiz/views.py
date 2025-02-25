@@ -222,8 +222,8 @@ class StartQuizView(APIView):
                         'error':'The previous session is expired'
                     },status=status.HTTP_400_BAD_REQUEST)
 
-                    serializer = QuizSessionSerializer(active_session)
-                    return Response(serializer.data,status=status.HTTP_200_OK)
+                serializer = QuizSessionSerializer(active_session)
+                return Response(serializer.data,status=status.HTTP_200_OK)
 
             # create a new quiz session
             session = models.QuizSession.objects.create(user=request.user,quiz_id=quiz)
@@ -241,6 +241,7 @@ class StartQuizView(APIView):
                     question_order=index
                 )
 
+            # start a new quiz session
             session.start_quiz()
             return Response({
                 'msg':'Quiz has been started',
@@ -257,32 +258,52 @@ class SubmitAnswerView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
-        serializer = serializers.AnswerSubmissionSerializer(data=request.data)
-        # print(serializer)
+        quiz_session_id = request.data.get('quiz_session_id')
+        question_id = request.data.get('question_id')
+        selected_answer_id = request.data.get('selected_answer_id')
 
-        if serializer.is_valid():
-            # Check user has submitted the answer previously
-            question = serializer.validated_data['question']
-            selected_answer = serializer.validated_data['selected_answer']
+        # if quiz_session_id and question_id and selected_answer_id:
+        #     return Response({'msg':'success'},status=status.HTTP_200_OK)
+        try:
+            question = models.Questions.objects.get(id=question_id,is_active=True)
+            selected_option = models.Choices.objects.filter(id=selected_answer_id,question_id=question_id).first()
 
-            if models.UserSolutions.objects.filter(user=request.user,question=question).exists():
-                return Response(
-                {"error": "You have already answered this question."},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+            if quiz_session_id:
+                active_session = models.QuizSession.objects.filter(id=quiz_session_id,user=request.user, status='in_progress').first()
+                print("active_session",active_session)
+                if active_session.is_time_expired():
+                    return Response({
+                        'error': 'The previous session is expired'
+                    }, status=status.HTTP_400_BAD_REQUEST)
 
-            # Check the submitted answer is correct or not
-            is_correct = selected_answer.is_correct
-            serializer.save(user=request.user,is_correct=is_correct)
+                if not active_session.questions.filter(id=question_id).exists():
+                    return Response({
+                        'error': f'The question id={question_id} can\'t be found under quiz_session_id={quiz_session_id}'
+                    },status=status.HTTP_400_BAD_REQUEST)
 
-            return Response(
-                {
-                    'msg':'Solution submitted successfully.',
-                    'is_correct':is_correct,
-                },status=status.HTTP_201_CREATED,
+            solution = models.UserSolutions.objects.create(
+                question=question,
+                selected_answer=selected_option,
+                is_correct=selected_option.is_correct,
+                attempt_type='quiz',
+                user=request.user,
+                quiz_session_id=quiz_session_id
             )
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            total_answered = models.UserSolutions.objects.filter(quiz_session=active_session).count()
+            print('total_answered :::', total_answered)
+            print('active_session.questions.count() :::',active_session.questions.count())
+            if total_answered == active_session.questions.count():
+                active_session.status = 'completed'
+                active_session.save()
+                return Response({
+                    'msg': 'Quiz submitted successfully'
+                }, status=status.HTTP_201_CREATED)
+
+        except (models.Questions.DoesNotExist, models.Choices.DoesNotExist) as e:
+            return Response({
+                'error':f'{e}'
+            },status=status.HTTP_400_BAD_REQUEST)
 
 class UserPracticeHistoryView(APIView):
     permission_classes = [permissions.IsAuthenticated]
