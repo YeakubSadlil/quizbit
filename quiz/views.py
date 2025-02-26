@@ -243,15 +243,17 @@ class StartQuizView(APIView):
 
             # start a new quiz session
             session.start_quiz()
+            question_serializer = serializers.QuestionListSerializer(selected_questions,many=True)
             return Response({
                 'msg':'Quiz has been started',
-                'session_id':f'{session.id}'
+                'session_id':f'{session.id}',
+                'questions': question_serializer.data
             },status=status.HTTP_201_CREATED)
 
         except models.Quiz.DoesNotExist:
             return Response({'error':'quiz not found'},status=status.HTTP_404_NOT_FOUND)
 
-class SubmitAnswerView(APIView):
+class SubmitQuizView(APIView):
     """
     User answer submission, Validate answer correctness, save submitted answer
     """
