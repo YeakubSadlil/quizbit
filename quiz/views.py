@@ -261,36 +261,58 @@ class SubmitQuizView(APIView):
 
     def post(self, request):
         quiz_session_id = request.data.get('quiz_session_id')
-        question_id = request.data.get('question_id')
-        selected_answer_id = request.data.get('selected_answer_id')
+        answers = request.data.get('answers',[])
 
-        # if quiz_session_id and question_id and selected_answer_id:
-        #     return Response({'msg':'success'},status=status.HTTP_200_OK)
+        if not quiz_session_id or not answers:
+            return Response({
+                'error':'quiz session id and answers list are required'
+            },status=status.HTTP_400_BAD_REQUEST)
+
         try:
-            question = models.Questions.objects.get(id=question_id,is_active=True)
-            selected_option = models.Choices.objects.filter(id=selected_answer_id,question_id=question_id).first()
+            # question = models.Questions.objects.get(id=question_id,is_active=True)
+            # selected_option = models.Choices.objects.filter(id=selected_answer_id,question_id=question_id).first()
 
-            if quiz_session_id:
-                active_session = models.QuizSession.objects.filter(id=quiz_session_id,user=request.user, status='in_progress').first()
-                print("active_session",active_session)
-                if active_session.is_time_expired():
+            active_session = models.QuizSession.objects.filter(
+                id=quiz_session_id,
+                user=request.user,
+                status='in_progress').first()
+
+            print("active_session",active_session)
+            if active_session.is_time_expired():
+                return Response({
+                    'error': 'The previous session is expired'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            for answer in answers:
+                question_id = answer.get('question_id')
+                selected_option_id = answer.get('selected_answer_id')
+
+                if not question_id or not selected_option_id:
+                    return Response({'error':'question_id and selected_answer_id are required'})
+                try:
+                    question = models.Questions.objects.get(id=question_id,is_active=True)
+                    selected_option = models.Choices.objects.get(id=selected_option_id,question=question)
+                except models.Questions.DoesNotExist():
                     return Response({
-                        'error': 'The previous session is expired'
-                    }, status=status.HTTP_400_BAD_REQUEST)
+                        'error':f'Question with question_id = {question_id} not found'},status=status.HTTP_404_NOT_FOUND)
+                except models.Choices.DoesNotExist():
+                    return Response({
+                        'error':f'Selected answer with id {selected_option_id} not found'},status=status.HTTP_404_NOT_FOUND)
 
+                print("t",active_session.questions.filter(id=question_id))
                 if not active_session.questions.filter(id=question_id).exists():
                     return Response({
-                        'error': f'The question id={question_id} can\'t be found under quiz_session_id={quiz_session_id}'
-                    },status=status.HTTP_400_BAD_REQUEST)
+                        'error':f'The question_id={question_id} under quiz session={quiz_session_id} can\'t be found'
+                    },status=status.HTTP_404_BAD_REQUEST)
 
-            solution = models.UserSolutions.objects.create(
-                question=question,
-                selected_answer=selected_option,
-                is_correct=selected_option.is_correct,
-                attempt_type='quiz',
-                user=request.user,
-                quiz_session_id=quiz_session_id
-            )
+                solution = models.UserSolutions.objects.create(
+                    question=question,
+                    selected_answer=selected_option,
+                    is_correct=selected_option.is_correct,
+                    attempt_type='quiz',
+                    user=request.user,
+                    quiz_session=active_session
+                )
 
             total_answered = models.UserSolutions.objects.filter(quiz_session=active_session).count()
             print('total_answered :::', total_answered)
@@ -302,10 +324,13 @@ class SubmitQuizView(APIView):
                     'msg': 'Quiz submitted successfully'
                 }, status=status.HTTP_201_CREATED)
 
-        except (models.Questions.DoesNotExist, models.Choices.DoesNotExist) as e:
             return Response({
-                'error':f'{e}'
-            },status=status.HTTP_400_BAD_REQUEST)
+                'msg':'Answer processed'
+            })
+        except models.QuizSession.DoesNotExist:
+            return Response({
+                'error':f'quiz session {quiz_session_id} not found'
+            },status=status.HTTP_404_NOT_FOUND)
 
 class UserPracticeHistoryView(APIView):
     permission_classes = [permissions.IsAuthenticated]
