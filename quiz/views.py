@@ -255,7 +255,7 @@ class StartQuizView(APIView):
 
 class SubmitQuizView(APIView):
     """
-    User answer submission, Validate answer correctness, save submitted answer
+    User quiz submission, validate quiz correctness, save submitted quiz
     """
     permission_classes = [permissions.IsAuthenticated]
 
@@ -268,69 +268,73 @@ class SubmitQuizView(APIView):
                 'error':'quiz session id and answers list are required'
             },status=status.HTTP_400_BAD_REQUEST)
 
-        try:
-            # question = models.Questions.objects.get(id=question_id,is_active=True)
-            # selected_option = models.Choices.objects.filter(id=selected_answer_id,question_id=question_id).first()
+        quiz_session = models.QuizSession.objects.filter(
+            id=quiz_session_id,
+            user=request.user
+        ).first()
 
-            active_session = models.QuizSession.objects.filter(
-                id=quiz_session_id,
+        if not quiz_session:
+            return Response({
+                'error': f'quiz session id {quiz_session_id} not found'
+            },status=status.HTTP_400_BAD_REQUEST)
+
+        # Handle session status
+        if quiz_session.status == "completed":
+            return Response({"error": "Quiz already submitted"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # check both: already expired or need to make expired
+        if quiz_session.status == "expired" or quiz_session.is_time_expired():
+            return Response({"error": "Quiz session has expired"}, status=status.HTTP_400_BAD_REQUEST)
+
+        for answer in answers:
+            question_id = answer.get('question_id')
+            selected_option_id = answer.get('selected_answer_id')
+
+            if not question_id or not selected_option_id:
+                return Response({'error':'question_id and selected_answer_id are required'})
+            try:
+                question = models.Questions.objects.get(id=question_id,is_active=True)
+                selected_option = models.Choices.objects.get(id=selected_option_id,question=question)
+            except models.Questions.DoesNotExist:
+                return Response({
+                    'error':f'Question with question_id = {question_id} not found'},status=status.HTTP_404_NOT_FOUND)
+            except models.Choices.DoesNotExist:
+                return Response({
+                    'error':f'Selected answer with id {selected_option_id} for the question id {question_id} not found'},status=status.HTTP_404_NOT_FOUND)
+
+            if not models.QuizSessionQuestion.objects.filter(
+                    quiz_session=quiz_session,
+                    questions_id=question_id
+            ).exists():
+                return Response({
+                    'error': f'The question_id={question_id} under quiz session={quiz_session_id} can\'t be found'
+                }, status=status.HTTP_404_NOT_FOUND)
+
+            # save the submitted answers
+            solution = models.UserSolutions.objects.update_or_create(
+                question=question,
+                selected_answer=selected_option,
+                is_correct=selected_option.is_correct,
+                attempt_type='quiz',
                 user=request.user,
-                status='in_progress').first()
+                quiz_session=quiz_session
+            )
 
-            print("active_session",active_session)
-            if active_session.is_time_expired():
-                return Response({
-                    'error': 'The previous session is expired'
-                }, status=status.HTTP_400_BAD_REQUEST)
+        total_answered = models.UserSolutions.objects.filter(
+            quiz_session=quiz_session
+        ).values('question').distinct().count()
 
-            for answer in answers:
-                question_id = answer.get('question_id')
-                selected_option_id = answer.get('selected_answer_id')
-
-                if not question_id or not selected_option_id:
-                    return Response({'error':'question_id and selected_answer_id are required'})
-                try:
-                    question = models.Questions.objects.get(id=question_id,is_active=True)
-                    selected_option = models.Choices.objects.get(id=selected_option_id,question=question)
-                except models.Questions.DoesNotExist():
-                    return Response({
-                        'error':f'Question with question_id = {question_id} not found'},status=status.HTTP_404_NOT_FOUND)
-                except models.Choices.DoesNotExist():
-                    return Response({
-                        'error':f'Selected answer with id {selected_option_id} not found'},status=status.HTTP_404_NOT_FOUND)
-
-                print("t",active_session.questions.filter(id=question_id))
-                if not active_session.questions.filter(id=question_id).exists():
-                    return Response({
-                        'error':f'The question_id={question_id} under quiz session={quiz_session_id} can\'t be found'
-                    },status=status.HTTP_404_BAD_REQUEST)
-
-                solution = models.UserSolutions.objects.create(
-                    question=question,
-                    selected_answer=selected_option,
-                    is_correct=selected_option.is_correct,
-                    attempt_type='quiz',
-                    user=request.user,
-                    quiz_session=active_session
-                )
-
-            total_answered = models.UserSolutions.objects.filter(quiz_session=active_session).count()
-            print('total_answered :::', total_answered)
-            print('active_session.questions.count() :::',active_session.questions.count())
-            if total_answered == active_session.questions.count():
-                active_session.status = 'completed'
-                active_session.save()
-                return Response({
-                    'msg': 'Quiz submitted successfully'
-                }, status=status.HTTP_201_CREATED)
-
+        # check whether all question is submitted or partially
+        if total_answered == quiz_session.questions.count():
+            quiz_session.status = 'completed'
+            quiz_session.save()
             return Response({
-                'msg':'Answer processed'
-            })
-        except models.QuizSession.DoesNotExist:
-            return Response({
-                'error':f'quiz session {quiz_session_id} not found'
-            },status=status.HTTP_404_NOT_FOUND)
+                'msg': 'Quiz is completed and submitted successfully'
+            }, status=status.HTTP_201_CREATED)
+
+        return Response({
+            'msg':'Quiz submitted partially'
+        },status=status.HTTP_201_CREATED)
 
 class UserPracticeHistoryView(APIView):
     permission_classes = [permissions.IsAuthenticated]

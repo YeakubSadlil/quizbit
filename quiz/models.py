@@ -120,7 +120,7 @@ class QuizSession(models.Model):
         ('expired','Expired'),
         ('not_started','Not Started'),
         ('completed','Completed'),
-        ('in_progrss','In Progess')
+        ('in_progress','In Progress')
     ]
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     quiz_id = models.ForeignKey(Quiz, on_delete=models.CASCADE)
