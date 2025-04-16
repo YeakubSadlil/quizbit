@@ -1,12 +1,10 @@
-from distutils.command.register import register
-
-from django.contrib.auth import authenticate
+import random
 from rest_framework.exceptions import ValidationError
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
 from rest_framework import status,permissions
-from .serializers import UserRegistrationSerializer, UserLoginSerializer
+from .serializers import UserRegistrationSerializer, UserLoginSerializer, QuizSessionSerializer
 from . import models,serializers
 from .emails import *
 class HomeView(APIView):
@@ -210,15 +208,59 @@ class QuestionDetailView(APIView):
             {'error':'Question not found'},status=status.HTTP_404_NOT_FOUND
             )
 
+class StartQuizView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def get(self,request,quiz_id):
+        try:
+            quiz = models.Quiz.objects.get(id=quiz_id,is_active=True)
+
+            # check if there is an active quiz exam session
+            active_session = models.QuizSession.objects.filter(user=request.user,quiz_id=quiz,status='in_progress').first()
+            if active_session:
+                if active_session.is_time_expired():
+                    return Response({
+                        'error':'The previous session is expired'
+                    },status=status.HTTP_400_BAD_REQUEST)
+
+                serializer = QuizSessionSerializer(active_session)
+                return Response(serializer.data,status=status.HTTP_200_OK)
+
+            # create a new quiz session
+            session = models.QuizSession.objects.create(user=request.user,quiz_id=quiz)
+
+            # retrieve all questions related to the quiz id
+            category_list = quiz.categories.all()
+            question_list = list(models.Questions.objects.filter(category__in=category_list,is_active=True))
+
+            selected_questions = random.sample(question_list,min(quiz.num_questions,len(question_list)))
+
+            for index, question in enumerate(selected_questions):
+                models.QuizSessionQuestion.objects.create(
+                    quiz_session=session,
+                    questions=question,
+                    question_order=index
+                )
+
+            # start a new quiz session
+            session.start_quiz()
+            question_serializer = serializers.QuestionListSerializer(selected_questions,many=True)
+            return Response({
+                'msg':'Quiz has been started',
+                'session_id':f'{session.id}',
+                'questions': question_serializer.data
+            },status=status.HTTP_201_CREATED)
+
+        except models.Quiz.DoesNotExist:
+            return Response({'error':'quiz not found'},status=status.HTTP_404_NOT_FOUND)
+
 class SubmitAnswerView(APIView):
     """
-    User answer submission, Validate answer correctness, save submitted answer
+    User single answer submission in practice mode
     """
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
         serializer = serializers.AnswerSubmissionSerializer(data=request.data)
-        # print(serializer)
 
         if serializer.is_valid():
             # Check user has submitted the answer previously
@@ -243,6 +285,89 @@ class SubmitAnswerView(APIView):
             )
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class SubmitQuizView(APIView):
+    """
+    User quiz submission in quiz mode. It submits all answers in a single request
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        quiz_session_id = request.data.get('quiz_session_id')
+        answers = request.data.get('answers',[])
+
+        if not quiz_session_id or not answers:
+            return Response({
+                'error':'quiz session id and answers list are required'
+            },status=status.HTTP_400_BAD_REQUEST)
+
+        quiz_session = models.QuizSession.objects.filter(
+            id=quiz_session_id,
+            user=request.user
+        ).first()
+
+        if not quiz_session:
+            return Response({
+                'error': f'quiz session id {quiz_session_id} not found'
+            },status=status.HTTP_400_BAD_REQUEST)
+
+        # Handle session status
+        if quiz_session.status == "completed":
+            return Response({"error": "Quiz already submitted"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # check both: already expired or need to make expired
+        if quiz_session.status == "expired" or quiz_session.is_time_expired():
+            return Response({"error": "Quiz session has expired"}, status=status.HTTP_400_BAD_REQUEST)
+
+        for answer in answers:
+            question_id = answer.get('question_id')
+            selected_option_id = answer.get('selected_answer_id')
+
+            if not question_id or not selected_option_id:
+                return Response({'error':'question_id and selected_answer_id are required'})
+            try:
+                question = models.Questions.objects.get(id=question_id,is_active=True)
+                selected_option = models.Choices.objects.get(id=selected_option_id,question=question)
+            except models.Questions.DoesNotExist:
+                return Response({
+                    'error':f'Question with question_id = {question_id} not found'},status=status.HTTP_404_NOT_FOUND)
+            except models.Choices.DoesNotExist:
+                return Response({
+                    'error':f'Selected answer with id {selected_option_id} for the question id {question_id} not found'},status=status.HTTP_404_NOT_FOUND)
+
+            if not models.QuizSessionQuestion.objects.filter(
+                    quiz_session=quiz_session,
+                    questions_id=question_id
+            ).exists():
+                return Response({
+                    'error': f'The question_id={question_id} under quiz session={quiz_session_id} can\'t be found'
+                }, status=status.HTTP_404_NOT_FOUND)
+
+            # save the submitted answers
+            solution = models.UserSolutions.objects.update_or_create(
+                question=question,
+                selected_answer=selected_option,
+                is_correct=selected_option.is_correct,
+                attempt_type='quiz',
+                user=request.user,
+                quiz_session=quiz_session
+            )
+
+        total_answered = models.UserSolutions.objects.filter(
+            quiz_session=quiz_session
+        ).values('question').distinct().count()
+
+        # check whether all questions are submitted completely or partially
+        if total_answered == quiz_session.questions.count():
+            quiz_session.status = 'completed'
+            quiz_session.save()
+            return Response({
+                'msg': 'Quiz is completed and submitted successfully'
+            }, status=status.HTTP_201_CREATED)
+
+        return Response({
+            'msg':'Quiz submitted partially'
+        },status=status.HTTP_201_CREATED)
 
 class UserPracticeHistoryView(APIView):
     permission_classes = [permissions.IsAuthenticated]
