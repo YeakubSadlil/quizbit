@@ -4,7 +4,7 @@
 
 <p align="center"> 
 This is a MCQ Simulation API, a platform for practicing Multiple Choice Questions (MCQs).<br>
-A web app that implemented Django Rest Framework and provided functionality for user registration, login, question retrieval, submit answer and view user submission history.<br>
+A web app that implemented Django Rest Framework and provided functionality for users to start timed quiz and submit, view their submission history.<br>
 The API used PostgreSQL as the database and Django Simple JWT for authentication.
 </p>
 
@@ -15,8 +15,7 @@ The API used PostgreSQL as the database and Django Simple JWT for authentication
 - [📊 Database Models](#database-models)
 - [🔄 Entity Relationship Diagram](#entity-relationship-diagram)
 - [🌱 Populate Database](#populate-database)
-- [➡️ Data Flow](#data-flow) 
-- [🚀 API Endpoints](#api-endpoints)
+- [➡️ Data Flow](#data-flow)
 
 ## Features
 
@@ -25,11 +24,14 @@ The API used PostgreSQL as the database and Django Simple JWT for authentication
 - User Login with email and password
 2. Question Retrieval
 - Retrieve a specific question from the database
-- Retrive a list of questions from the database
-3. Anwser Submission
+- Retrieve a list of questions from the database
+3. Answer Submission
 - Submit an answer to a question
 - Validate the answer and check the result
-4. User Submission History
+4. Quiz Submission
+- Start a timed quiz from the quiz list
+- Submit all selected solutions in a request
+5. User Submission History
 - Retrieve a list of user submission history, attempt number, accuracy (score) and time taken
 
 ## Prerequisites
@@ -126,7 +128,7 @@ erDiagram
 2. Create Question Categories
 3. Create Questions
 4. Create Choices for each question
-- Otherwise import the sample database
+- Otherwise, import the sample database
 
 ## Data Flow
 
@@ -165,187 +167,3 @@ sequenceDiagram
         A-->>U: Error: Already Submitted
     end
 ```
-
-## API Endpoints
-1. **User Registration**
-```
-POST /api/register/
-```
-- Request Body:
-```json
-{
-    "email": "demo@gmail.com",
-    "name": "Shahed Afridi",
-    "password": "1234",
-    "password2": "1234"
-}
-```
-- Response:
-```json
-{
-    "token": {
-        "refresh": "<refresh-token>",
-        "access": "<access-token>"
-    },
-    "msg": "Registration success"
-}
-```
-2. **User Login**
-```bash
-POST /api/login/
-```
-- Request Body:
-```json
-{
-    "email":"ab5@gmail.com",
-    "password":"456"
-}
-```
-- Response:
-```json
-{
-    "token": {
-        "refresh": "<refresh-token>",
-        "access": "<access-token>"
-    },
-    "msg": "Login Success",
-    "email": "ab5@gmail.com"
-}
-```
-3 . **Question Retrieval**
-```bash
-GET /api/questionlist/
-```
-- Headers:
-```json
-{
-    "Authorization": "Bearer <access_token>"
-}
-```
-- Response:
-```json
-{
-    "Total num. of Questions": 3,
-    "All questions": [
-        {
-            "id": 2,
-            "text": "What is the symbol for Gold?",
-            "difficulty": "medium",
-            "category_name": "Chemistry",
-            "options": [
-                {
-                    "id": 5,
-                    "solution": "Au"
-                },
-                {
-                    "id": 6,
-                    "solution": "Gu"
-                },
-                {
-                    "id": 7,
-                    "solution": "Gd"
-                },
-                {
-                    "id": 8,
-                    "solution": "Gl"
-                }
-            ]
-        }
-        ...
-    ]
-}
-```
-4. **Retrieve a specific question detail by id**
-```bash
-GET /api/question-detail/<id>/
-```
-- Headers:
-```json
-{
-    "Authorization": "Bearer <access_token>"
-}
-```
-- Response:
-```json
-{
-    "id": 2,
-    "text": "What is the symbol for Gold?",
-    "difficulty": "medium",
-    "category_name": "Physics",
-    "choice": [
-        {
-            "id": 5,
-            "solution": "Au"
-        },
-        {
-            "id": 6,
-            "solution": "Gu"
-        },
-        {
-            "id": 7,
-            "solution": "Gd"
-        },
-        {
-            "id": 8,
-            "solution": "Gl"
-        }
-    ]
-}
-```
-5. **Answer Submission**
-```
-POST /api/submit-answer/
-```
-- Headers:
-```json
-{
-    "Authorization": "Bearer <access_token>"
-}
-```
-- Request Body:
-```json
-{
-    "question": 2,
-    "selected_answer": 6     
-}
-```
-- Response:
-```json
-{
-    "msg": "Solution submitted successfully.",
-    "is_correct": true
-}
-```
-6. **User Submission History**
-```
-POST /api/user_history/
-```
-
-- Headers:
-```json
-{
-    "Authorization": "Bearer <access_token>"
-}
-```
-- Response:
-```json
-{
-    "Num of questions attempted": 2,
-    "no_correct_answers": 1,
-    "question data": [
-        {
-            "question": 1,
-            "question_descr": "What is 1 + 3?",
-            "is_correct": true,
-            "answered_at": "2024-11-18T12:44:47.022316Z"
-        },
-        {
-            "question": 2,
-            "question_descr": "What is the symbol for Gold?",
-            "is_correct": false,
-            "answered_at": "2024-11-18T11:52:19.614287Z"
-        }
-    ]
-}
-```
-
