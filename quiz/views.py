@@ -255,7 +255,7 @@ class StartQuizView(APIView):
 
 class SubmitAnswerView(APIView):
     """
-    User answer submission, Validate answer correctness, save submitted answer
+    User single answer submission in practice mode
     """
     permission_classes = [permissions.IsAuthenticated]
 
@@ -288,7 +288,7 @@ class SubmitAnswerView(APIView):
 
 class SubmitQuizView(APIView):
     """
-    User quiz submission, validate quiz correctness, save submitted quiz
+    User quiz submission in quiz mode. It submits all answers in a single request
     """
     permission_classes = [permissions.IsAuthenticated]
 
@@ -357,7 +357,7 @@ class SubmitQuizView(APIView):
             quiz_session=quiz_session
         ).values('question').distinct().count()
 
-        # check whether all question is submitted or partially
+        # check whether all questions are submitted completely or partially
         if total_answered == quiz_session.questions.count():
             quiz_session.status = 'completed'
             quiz_session.save()
