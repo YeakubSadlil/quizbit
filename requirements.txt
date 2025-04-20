@@ -5,3 +5,4 @@ django-filter==24.2
 psycopg2-binary==2.9.9
 cryptography==42.0.8
 PyJWT==2.8.0
+python-dotenv==1.0.1
