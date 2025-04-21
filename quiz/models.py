@@ -92,7 +92,7 @@ class Questions(models.Model):
 
 class Choices(models.Model):
     question = models.ForeignKey(Questions,on_delete=models.CASCADE, db_column='question_id')
-    option = models.TextField(max_length=200)
+    option = models.TextField(max_length=200, null=True)
     is_correct = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
