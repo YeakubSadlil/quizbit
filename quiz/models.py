@@ -35,6 +35,9 @@ class UserManager(BaseUserManager):
         return user
 
 class Users(AbstractBaseUser):
+    """
+    Custom user model with email as the unique identifier
+    """
     email = models.EmailField(
         verbose_name="email address",
         max_length=50,
@@ -67,6 +70,9 @@ class Users(AbstractBaseUser):
         return self.is_admin
 
 class Question_Category(models.Model):
+    """
+    Category of each question like Math,Physics,Chemistry etc
+    """
     name = models.CharField(max_length=80)
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -75,6 +81,9 @@ class Question_Category(models.Model):
         return self.name
 
 class Questions(models.Model):
+    """
+    MCQ question with description, difficulty level, correctness and category
+    """
     difficulty_choice = [
         ('easy','Easy'),
         ('medium','Medium'),
@@ -91,16 +100,21 @@ class Questions(models.Model):
         return self.text[:40]
 
 class Choices(models.Model):
+    """
+    Multiple options for each question is stored with the predefined correct answer
+    """
     question = models.ForeignKey(Questions,on_delete=models.CASCADE, db_column='question_id')
-    option = models.TextField(max_length=200)
+    option = models.TextField(max_length=200, null=True)
     is_correct = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.option
 
-# Quiz configuration table
 class Quiz(models.Model):
+    """
+    Quiz configuration including quiz title, duration, categories
+    """
     title = models.CharField(max_length=250)
     descriptions = models.TextField(blank=True)
     num_questions = models.IntegerField(default=5)
@@ -114,8 +128,10 @@ class Quiz(models.Model):
     class Meta:
         db_table = 'quiz_info'
 
-# Quiz session management table
 class QuizSession(models.Model):
+    """
+    Tracks individual quiz status, score and timing
+    """
     status_choices = [
         ('expired','Expired'),
         ('not_started','Not Started'),
@@ -146,8 +162,10 @@ class QuizSession(models.Model):
         else:
             return False
 
-# Quiz session question table
 class QuizSessionQuestion(models.Model):
+    """
+    Maps QuizSession and Questions
+    """
     quiz_session = models.ForeignKey(QuizSession, on_delete=models.CASCADE)
     questions = models.ForeignKey(Questions, on_delete=models.CASCADE)
     question_order = models.IntegerField()
@@ -156,6 +174,9 @@ class QuizSessionQuestion(models.Model):
         ordering = ['question_order']
 
 class UserSolutions(models.Model):
+    """
+    Stores user submission history with his answer and time taken
+    """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     question = models.ForeignKey(Questions,on_delete=models.CASCADE)
     selected_answer = models.ForeignKey(Choices,on_delete=models.CASCADE)
