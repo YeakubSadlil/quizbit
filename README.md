@@ -19,6 +19,9 @@ The API used PostgreSQL as the database and Django Simple JWT for authentication
 
 [//]: # (- [➡️ Data Flow]&#40;#data-flow&#41;)
 
+## ⚠️ NB:  
+- 🗂️ **View the project plans and tracking at a glance in [Project Tab](https://github.com/users/YeakubSadlil/projects/3) and progress in [MileStones](https://github.com/YeakubSadlil/quizbit/milestones)**
+
 ## Features
 
 1. **User Authentication**
@@ -28,14 +31,14 @@ The API used PostgreSQL as the database and Django Simple JWT for authentication
 2. **Question Retrieval**
 - Retrieve a question from the database filtered by difficulty
 - Retrieve a list of questions info with related multiple choice option 
-3. Answer Submission
+3. **Answer Submission**
 - Submit an answer to a question
 - Validate the answer and check the result
-4. Quiz Submission
+4. **Quiz Submission**
 - Start a timed quiz from the quiz list
 - Real time quiz tracking with expiration, completed status
 - Submit all selected solutions in a request
-5. User Submission History
+5. **User Submission History**
 - Retrieve a list of user submission history, attempt number, accuracy (score) and time taken
 
 ## Prerequisites
