@@ -9,7 +9,7 @@ services:
       - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./sample_database/backup_db.sql:/docker-entrypoint-initdb.d/backup_db.sql
+#      - ./sample_database/sample_db.sql:/docker-entrypoint-initdb.d/sample_db.sql
     env_file:
       - .env
 

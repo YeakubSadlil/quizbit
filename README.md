@@ -11,25 +11,29 @@ The API used PostgreSQL as the database and Django Simple JWT for authentication
 ## 📑 Table of Contents
 - [⭐ Features](#features)
 - [🛠️ Prerequisites](#prerequisites)
-- [💻 Installation](#installation) 
+- [💻 Manual Installation](#manual-installation)
+- [🐳 Docker Installation](#Docker-Installation)
 - [📊 Database Models](#database-models)
 - [🔄 Entity Relationship Diagram](#entity-relationship-diagram)
 - [🌱 Populate Database](#populate-database)
-- [➡️ Data Flow](#data-flow)
+
+[//]: # (- [➡️ Data Flow]&#40;#data-flow&#41;)
 
 ## Features
 
-1. User Authentication
+1. **User Authentication**
 - User Registration with password confirmation
-- User Login with email and password
-2. Question Retrieval
-- Retrieve a specific question from the database
-- Retrieve a list of questions from the database
+- OTP based email verification
+- User Login with email and JWT authentication
+2. **Question Retrieval**
+- Retrieve a question from the database filtered by difficulty
+- Retrieve a list of questions info with related multiple choice option 
 3. Answer Submission
 - Submit an answer to a question
 - Validate the answer and check the result
 4. Quiz Submission
 - Start a timed quiz from the quiz list
+- Real time quiz tracking with expiration, completed status
 - Submit all selected solutions in a request
 5. User Submission History
 - Retrieve a list of user submission history, attempt number, accuracy (score) and time taken
@@ -40,7 +44,7 @@ The API used PostgreSQL as the database and Django Simple JWT for authentication
 - Django Simple JWT
 - PostgreSQL (Database)
 
-## Installation
+## Manual Installation
 1. Clone the repository
 ```bash
 git clone https://github.com/YeakubSadlil/quizbit.git
@@ -50,42 +54,73 @@ cd quizbit
 ```bash
 pip install -r requirements.txt
 ```
-3. Apply the database migrations
+
+3. Create .env file based on the .env.example
+```bash
+cp .env.example .env
+# edit the .env based on your database and email settings
+```
+4. Apply the database migrations
 ```bash
 python manage.py makemigrations
 python manage.py migrate
 ```
-4. Create a superuser for admin access
+5. Create a superuser for admin access
 ```bash
 python manage.py createsuperuser
 ```
-5. Run the server
+6. Run the server
 ```bash
 python manage.py runserver
 ```
 
+## Docker Installation
+1. Clone the repository
+```bash
+git clone https://github.com/YeakubSadlil/quizbit.git
+cd quizbit
+```
+2. Create .env file based on the .env.example
+```bash
+cp .env.example .env
+# edit the .env based on your database and email settings
+```
+3. Create the docker container (Web + Database)
+```bash
+docker compose up
+```
 ## Database Models
 1. **Users:** Custom user model with email as the unique identifier
 2. **Question_Category:** Category of each question like Math,Physics,Chemistry etc.
 3. **Questions:** MCQ question with description, difficulty level, correctness and category
-4. **Choices:** Multiple options for each question is stored with the correct answer
-5. **UserSolution:** Stores user submission history with his answer and time taken
+4. **Choices:** Multiple options for each question is stored with the predefined correct answer
+5. **Quiz:** Quiz configuration including quiz title, duration, categories
+6. **QuizSession:** Tracks individual quiz status, score and timing
+7. **QuizSessionQuestion:** Maps QuizSession and Questions 
+8. **UserSolutions:** Stores user submission history with his answer and time taken
 
 ## Entity Relationship Diagram
 ```mermaid
 erDiagram
     Users ||--o{UserSolutions: submits
+    Users ||--o{QuizSession: takes
     Questions ||--o{ Choices:multiple_options
     Questions ||--o{ UserSolutions:answered_in
     Questions }o--|| Question_Category: belongs_to
     Choices ||--o{UserSolutions:selected_as
+    Quiz }|--|{Question_Category:includes
+    Quiz ||--o{QuizSession:includes
+    QuizSession ||--o{QuizSessionQuestion:contains
+    QuizSession ||--o{UserSolutions:records
+    Questions ||--o{QuizSessionQuestion:used_in
 
     Users {
         int id PK "2"
-        string email UK "ab1@gmail.com"
+        string email UK "example@gmail.com"
         string name "Abir"
         boolean is_active  "True"
         boolean is_admin "False"
+        string otp
         datetime created_at "2024-11-20"
         datetime modified "2024-11-20"
     }
@@ -94,7 +129,7 @@ erDiagram
         int id PK "2"
         string name "Math"
         text description "Mathematics"
-        datetime created_at "2024-11-20 10:00:00"
+        datetime created_at "2024-11-20"
     }
 
     Questions {
@@ -103,7 +138,7 @@ erDiagram
         text text "What is 2*3=?"
         string difficulty "easy"
         boolean is_active "True"
-        datetime created_at "2024-11-20 11:10:00"
+        datetime created_at "2024-11-20"
     }
 
     Choices {
@@ -111,7 +146,7 @@ erDiagram
         int question_id FK "1"
         text options_id "6,7,5,4"
         boolean is_correct "True"
-        datetime created_at "2024-11-20 11:00:00"
+        datetime created_at "2024-11-20"
      }
 
     UserSolutions {
@@ -120,50 +155,61 @@ erDiagram
         int question_id FK "1"
         int selected_answer_id FK "1"
         boolean is_correct "True"
-        datetime answered_at "2024-11-20 12:00:00"}
+        int quiz_session_id FK
+        string attemp_type "Quiz / Practice"
+        datetime answered_at "2024-11-20"}
+        
+    Quiz {
+        int id PK
+        string title
+        text description
+        int num_questions
+        int quiz_duration_min
+        boolean is_active
+    }
+    QuizSession {
+        int id PK
+        int user_id FK
+        int quiz_id FK
+        string status
+        datetime start_time
+        datetime end_time
+        int score
+        datetime created_at
+    }
+
+    QuizSessionQuestion {
+        int id PK
+        int quiz_session_id FK
+        int questions_id FK
+        int question_order
+    }
 ```
 
 ## Populate Database
+
 1. Access admin panel at `http://localhost:8000/admin/`
+
 2. Create Question Categories
+
 3. Create Questions
+
 4. Create Choices for each question
+
 - Otherwise, import the sample database
 
-## Data Flow
+## API Endpoints
 
-```mermaid
-sequenceDiagram
-    participant U as User
-    participant A as API
-    participant Auth as Auth Service
-    participant DB as Database
-    
-    U->>A: POST /api/login/
-    A->>Auth: Validate Credentials
-    Auth->>DB: Query User
-    DB-->>Auth: User Data
-    Auth->>Auth: Generate JWT
-    Auth-->>A: Return Token
-    A-->>U: Token Response
-
-    U->>A: GET /api/questionlist/
-    A->>Auth: Validate Token
-    Auth-->>A: Token Valid
-    A->>DB: Query Questions
-    DB-->>A: Question Data
-    A-->>U: Question List
-
-    U->>A: POST /api/submit-answer/
-    A->>Auth: Validate Token
-    Auth-->>A: Token Valid
-    A->>DB: Check Previous Submission
-    DB-->>A: Submission Status
-    alt No Previous Submission
-        A->>DB: Save Answer
-        A->>DB: Update History
-        A-->>U: Success Response
-    else Has Previous Submission
-        A-->>U: Error: Already Submitted
-    end
-```
+| Endpoints                        | Method | Description                          | Authentication Required |
+|----------------------------------|--------|--------------------------------------|-------------------------|
+| `/api/`                          | GET | Home view with endpoints list        | No                      |
+| `/api/register/`                 | POST | Register a new user                  | No                      |
+| `/api/verify-otp/`               | POST | Verify a user with OTP               | No                      |
+| `/api/login/`                    | POST | Login and get JWT token              | No                      |
+| `/api/questionlist/`             | GET | List all questions with filters      | No                      |
+| `/api/question-detail/<int:pk>/` | GET | Get a question with multiple choices | No                      |
+| `/api/submit-answer/`            | POST | Submit answer in practice mode       | Yes                     |
+| `/api/start-quiz/<int:quiz_id>/` | GET | Start a new quiz session             | Yes                     |
+| `/api/submit-quiz/`              | POST | Submit all answers for a quiz        | Yes                     |
+| `/api/user_history/`             | GET | Get user's practice history          | Yes                     |
+| `/admin/`                        | GET | Admin interface                      | Admin only              |
