@@ -1,4 +1,3 @@
-import random
 from rest_framework.exceptions import ValidationError
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -7,6 +6,7 @@ from rest_framework import status,permissions
 from .serializers import UserRegistrationSerializer, UserLoginSerializer, QuizSessionSerializer
 from . import models,serializers
 from .emails import *
+from rest_framework.pagination import PageNumberPagination
 class HomeView(APIView):
     """
     Home view for the root URL
@@ -166,20 +166,25 @@ class QuestionListView(APIView):
                     f"category_id with {category_id} does not exist in the database"
                 },status=status.HTTP_404_NOT_FOUND)
 
-            questions = models.Questions.objects.filter(is_active=True)
+            questions = models.Questions.objects.filter(is_active=True).order_by("id")
 
             if difficulty:
-                questions = questions.filter(is_active=True, difficulty = difficulty)
+                questions = questions.filter(difficulty = difficulty)
             if category_id:
-                questions = questions.filter(is_active=True, category_id = category_id)
+                questions = questions.filter(category_id = category_id)
 
-            serializer = serializers.QuestionListSerializer(questions,many=True)
+            paginator = PageNumberPagination()
+            paginator.page_size = 3
+            paginated_questions = paginator.paginate_queryset(questions, request)
 
-            return Response({
-                    'Total num. of Questions': questions.count(),
-                    'All questions': serializer.data
-                }, status=status.HTTP_200_OK
-            )
+            serializer = serializers.QuestionListSerializer(paginated_questions,many=True)
+
+            return paginator.get_paginated_response(serializer.data)
+            # return Response({
+            #         'Total num. of Questions': questions.count(),
+            #         'All questions': serializer.data
+            #     }, status=status.HTTP_200_OK
+            # )
 
         except ValidationError as e:
             return Response({

@@ -130,3 +130,8 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = os.getenv("E_PORT")
 EMAIL_HOST_USER = os.getenv("E_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("E_HOST_PASSWORD")
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20
+}
