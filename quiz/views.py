@@ -161,9 +161,14 @@ class QuestionListView(APIView):
         try:
             difficulty = self.validate_difficulty(request.query_params.get('difficulty'))
             category_id = self.validate_category(request.query_params.get('category_id'))
+            cached_data = None
 
-            cache_key = f"qustion_list_difficulty={difficulty}+category_id={category_id}"
-            cached_data = cache.get(cache_key)
+            try:
+                cache_key = f"qustion_list_difficulty={difficulty}+category_id={category_id}"
+                cached_data = cache.get(cache_key)
+            except Exception as cache_error:
+                print(f"[Warning] Redis not avialable (GET): {cache_error}")
+
             if cached_data:
                 return Response(cached_data)
 
@@ -188,7 +193,11 @@ class QuestionListView(APIView):
 
             # store the paginated response in cache
             paginated_response = paginator.get_paginated_response(serializer.data).data
-            cache.set(cache_key, paginated_response, 60*5)
+            try:
+                cache.set(cache_key, paginated_response, 60*5)
+            except Exception as cache_error:
+                print(f"[Warning] Redis not avialable (SET): {cache_error}")
+
             return Response(paginated_response)
 
             # return Response({
@@ -205,7 +214,7 @@ class QuestionListView(APIView):
 
         except Exception as e:
             return Response({
-                'error':'An unexpected error occurred'
+                'error': f'An unexpected error occured : {e}'
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class QuestionDetailView(APIView):
