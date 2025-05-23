@@ -17,10 +17,10 @@ class HomeView(APIView):
             "msg": "This is QuizBit, a MCQ Simulation API!",
             "endpoints":{
                 "register":"/api/register/",
-                "verify otp": "/api/verifiy-otp/",
+                "verify otp": "/api/verify-otp/",
                 "login":"/api/login/",
                 "admin data management":"/admin",
-                "question lists":"/api/questionlist/",
+                "question lists":"/api/question-list/",
                 "question detail": "/api/question-detail/<int:pk>/",
                 "submit answer": "/api/submit-answer/",
                 "user histories": "/api/user_history/"
