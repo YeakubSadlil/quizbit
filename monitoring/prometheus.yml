@@ -1,0 +1,7 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: 'quizbit'
+    static_configs:
+      - targets: ["django-docker:8000"]

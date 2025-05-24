@@ -9,7 +9,7 @@ services:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      # import the dumped sample_db.sql N.B: remove migrations and migrate while importing
+      # import the dumped sample_db.sql N.B: remove migrations and migrate from below while importing and run first time only while building image
       # - ./sample_database/sample_db.sql:/docker-entrypoint-initdb.d/sample_db.sql
     env_file:
       - .env
@@ -19,6 +19,14 @@ services:
     container_name: redis-service
     ports:
       - "6380:6379"
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
 
   django_web:
     build: .
