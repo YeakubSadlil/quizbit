@@ -1,4 +1,3 @@
-import random
 from rest_framework.exceptions import ValidationError
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -7,6 +6,8 @@ from rest_framework import status,permissions
 from .serializers import UserRegistrationSerializer, UserLoginSerializer, QuizSessionSerializer
 from . import models,serializers
 from .emails import *
+from rest_framework.pagination import PageNumberPagination
+from django.core.cache import cache
 class HomeView(APIView):
     """
     Home view for the root URL
@@ -16,10 +17,10 @@ class HomeView(APIView):
             "msg": "This is QuizBit, a MCQ Simulation API!",
             "endpoints":{
                 "register":"/api/register/",
-                "verify otp": "/api/verifiy-otp/",
+                "verify otp": "/api/verify-otp/",
                 "login":"/api/login/",
                 "admin data management":"/admin",
-                "question lists":"/api/questionlist/",
+                "question lists":"/api/question-list/",
                 "question detail": "/api/question-detail/<int:pk>/",
                 "submit answer": "/api/submit-answer/",
                 "user histories": "/api/user_history/"
@@ -160,26 +161,50 @@ class QuestionListView(APIView):
         try:
             difficulty = self.validate_difficulty(request.query_params.get('difficulty'))
             category_id = self.validate_category(request.query_params.get('category_id'))
+            cached_data = None
+
+            try:
+                cache_key = f"qustion_list_difficulty={difficulty}+category_id={category_id}"
+                cached_data = cache.get(cache_key)
+            except Exception as cache_error:
+                print(f"[Warning] Redis not avialable (GET): {cache_error}")
+
+            if cached_data:
+                return Response(cached_data)
 
             if category_id and not models.Question_Category.objects.filter(id=category_id).exists():
                 return Response({
                     f"category_id with {category_id} does not exist in the database"
                 },status=status.HTTP_404_NOT_FOUND)
 
-            questions = models.Questions.objects.filter(is_active=True)
+            questions = models.Questions.objects.filter(is_active=True).order_by("id")
 
             if difficulty:
-                questions = questions.filter(is_active=True, difficulty = difficulty)
+                questions = questions.filter(difficulty = difficulty)
             if category_id:
-                questions = questions.filter(is_active=True, category_id = category_id)
+                questions = questions.filter(category_id = category_id)
 
-            serializer = serializers.QuestionListSerializer(questions,many=True)
+            # paginate the response
+            paginator = PageNumberPagination()
+            paginator.page_size = 50
+            paginated_questions = paginator.paginate_queryset(questions, request)
 
-            return Response({
-                    'Total num. of Questions': questions.count(),
-                    'All questions': serializer.data
-                }, status=status.HTTP_200_OK
-            )
+            serializer = serializers.QuestionListSerializer(paginated_questions,many=True)
+
+            # store the paginated response in cache
+            paginated_response = paginator.get_paginated_response(serializer.data).data
+            try:
+                cache.set(cache_key, paginated_response, 60*5)
+            except Exception as cache_error:
+                print(f"[Warning] Redis not avialable (SET): {cache_error}")
+
+            return Response(paginated_response)
+
+            # return Response({
+            #         'Total num. of Questions': questions.count(),
+            #         'All questions': serializer.data
+            #     }, status=status.HTTP_200_OK
+            # )
 
         except ValidationError as e:
             return Response({
@@ -189,7 +214,7 @@ class QuestionListView(APIView):
 
         except Exception as e:
             return Response({
-                'error':'An unexpected error occurred'
+                'error': f'An unexpected error occured : {e}'
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class QuestionDetailView(APIView):
