@@ -10,5 +10,5 @@ urlpatterns=[
     path("submit-answer/",SubmitAnswerView.as_view(),name="SubmitAnswer"),
     path("quiz/<int:quiz_id>/",StartQuizView.as_view(),name="start_quiz"),
     path("submit-quiz/",SubmitQuizView.as_view(),name="SubmitQuiz"),
-    path("user_history/",UserPracticeHistoryView.as_view(),name="UserPracticeHistory")
+    path("user_history/",UserPracticeHistoryView.as_view(),name="UserPracticeHistory"),
 ]

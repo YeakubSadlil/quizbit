@@ -8,3 +8,4 @@ PyJWT==2.8.0
 python-dotenv==1.0.1
 Faker==35.2.2
 django-redis==5.4.0
+django-prometheus
