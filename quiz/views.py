@@ -186,7 +186,7 @@ class QuestionListView(APIView):
 
             # paginate the response
             paginator = PageNumberPagination()
-            paginator.page_size = 50
+            paginator.page_size = 1000
             paginated_questions = paginator.paginate_queryset(questions, request)
 
             serializer = serializers.QuestionListSerializer(paginated_questions,many=True)

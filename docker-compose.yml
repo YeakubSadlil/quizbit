@@ -27,6 +27,17 @@ services:
       - "9090:9090"
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+
+  grafana:
+    image: grafana/grafana-enterprise
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    depends_on:
+      - prometheus
 
   django_web:
     build: .
@@ -46,9 +57,15 @@ services:
       - .:/app
     command: >
       sh -c "while ! nc -z db 5432; do echo '⏳ waiting for PostgreSQL...'; sleep 1; done &&
-             python manage.py makemigrations --noinput &&
-             python manage.py migrate &&
              python manage.py runserver 0.0.0.0:8080"
+
+#     command: >
+#      sh -c "while ! nc -z db 5432; do echo '⏳ waiting for PostgreSQL...'; sleep 1; done &&
+#             python manage.py makemigrations --noinput &&
+#             python manage.py migrate &&
+#             python manage.py runserver 0.0.0.0:8080"
 
 volumes:
   postgres_data:
+  prometheus-data:
+  grafana-storage: {}
