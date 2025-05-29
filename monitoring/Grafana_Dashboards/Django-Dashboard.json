@@ -31,7 +31,7 @@
   "panels": [
     {
       "datasource": {
-        "uid": "ben4bcmpel8g0e"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -98,7 +98,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "ben4bcmpel8g0e"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -154,7 +154,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "ben4bcmpel8g0e"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -172,7 +172,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "ben4bcmpel8g0e"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -228,7 +228,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "ben4bcmpel8g0e"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(max_over_time(django_db_new_connection_errors_total{app=~\"^$application$\"}[$__range]))",
@@ -243,7 +243,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "ben4bcmpel8g0e"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -301,7 +301,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "ben4bcmpel8g0e"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(django_cache_get_hits_total{app=~\"^$application$\"}) by (backend) / sum(django_cache_get_total{app=~\"^$application$\"}) by (backend)",
@@ -316,7 +316,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "ben4bcmpel8g0e"
+        "uid": "prometheus"
       },
       "description": "",
       "fieldConfig": {
@@ -386,7 +386,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "ben4bcmpel8g0e"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -828,7 +828,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "ben4bcmpel8g0e"
+        "uid": "prometheus"
       },
       "description": "",
       "fieldConfig": {
@@ -898,7 +898,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "ben4bcmpel8g0e"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(rate(django_http_requests_latency_including_middlewares_seconds_bucket{app=~\"^$application$\"}[$__rate_interval])) by (le)",
@@ -1259,7 +1259,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "ben4bcmpel8g0e"
+        "uid": "prometheus"
       },
       "description": "",
       "fieldConfig": {
@@ -1329,7 +1329,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "ben4bcmpel8g0e"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -1348,7 +1348,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "ben4bcmpel8g0e"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1416,7 +1416,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "ben4bcmpel8g0e"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(rate(django_db_query_duration_seconds_bucket{app=~\"^$application$\"}[$__rate_interval])) by (le)",
@@ -1432,7 +1432,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "ben4bcmpel8g0e"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1514,7 +1514,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "ben4bcmpel8g0e"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(irate(django_db_execute_total{app=~\"^$application$\"}[$__rate_interval])) by (vendor)",
@@ -1541,7 +1541,7 @@
       {
         "current": {
           "text": "prometheus",
-          "value": "ben4bcmpel8g0e"
+          "value": "prometheus"
         },
         "includeAll": false,
         "name": "datasource",
