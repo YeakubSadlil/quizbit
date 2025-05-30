@@ -405,7 +405,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "$datasource"
+        "uid": "prometheus"
       },
       "description": "",
       "fieldConfig": {
@@ -472,7 +472,7 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(irate(django_http_requests_total_by_transport_total{app=~\"^$application$\"}[$__rate_interval]))",
@@ -488,7 +488,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "$datasource"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -556,7 +556,7 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(irate(django_http_responses_total_by_status_total{status=~\"2.+\",app=~\"^$application$\"}[$__rate_interval]))",
@@ -573,7 +573,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "$datasource"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -641,7 +641,7 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(irate(django_http_responses_total_by_status_total{status=~\"4.+\",app=~\"^$application$\"}[$__rate_interval]))",
@@ -658,7 +658,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "$datasource"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -726,7 +726,7 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(irate(django_http_responses_total_by_status_total{status=~\"3.+\",app=~\"^$application$\"}[$__rate_interval]))",
@@ -743,7 +743,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "$datasource"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -811,7 +811,7 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(irate(django_http_responses_total_by_status_total{status=~\"5.+\",app=~\"^$application$\"}[$__rate_interval]))",
@@ -915,7 +915,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "$datasource"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1001,7 +1001,7 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(irate(django_http_responses_total_by_status_total{app=~\"^$application$\"}[$__rate_interval])) by(status)",
@@ -1019,7 +1019,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "$datasource"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1103,7 +1103,7 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "histogram_quantile(0.50, sum(irate(django_http_requests_latency_seconds_by_view_method_bucket{app=~\"^$application$\"}[$__rate_interval])) by (le))",
@@ -1116,7 +1116,7 @@
         },
         {
           "datasource": {
-            "uid": "$datasource"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "histogram_quantile(0.95, sum(irate(django_http_requests_latency_seconds_by_view_method_bucket{app=~\"^$application$\"}[$__rate_interval])) by (le))",
@@ -1130,7 +1130,7 @@
         },
         {
           "datasource": {
-            "uid": "$datasource"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "histogram_quantile(0.99, sum(irate(django_http_requests_latency_seconds_by_view_method_bucket{app=~\"^$application$\"}[$__rate_interval])) by (le))",
@@ -1149,7 +1149,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "$datasource"
+        "uid": "prometheus"
       },
       "description": "",
       "fieldConfig": {
@@ -1238,7 +1238,7 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -1558,7 +1558,7 @@
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "$datasource"
+          "uid": "prometheus"
         },
         "definition": "label_values(python_info,app)",
         "includeAll": true,
