@@ -1,51 +1,93 @@
-<h1 align="center">
-📝Quizbit MCQ API
-</h1>
+# 📝 Quizbit MCQ API
 
-<p align="center"> 
-This is a MCQ Simulation API, a platform for practicing Multiple Choice Questions (MCQs).<br>
-A web app that implemented Django Rest Framework and provided functionality for users to start timed quiz and submit, view their submission history.<br>
-The API used PostgreSQL as the database and Django Simple JWT for authentication.
-</p>
+> A scalable and secure Multiple Choice Question (MCQ) simulation api built using **Django REST**<br>
+> Users can register via otp, login, take timed quizzes and view their submission history <br>
+> The entire system is containerized via **Docker**, **Redis** based caching, **Postgresql** as database, monitored via **Prometheus + Grafana** 
 
 ## 📑 Table of Contents
 - [⭐ Features](#features)
-- [🛠️ Prerequisites](#prerequisites)
+- [🐳 Docker Installation](#docker-installation)
 - [💻 Manual Installation](#manual-installation)
-- [🐳 Docker Installation](#Docker-Installation)
 - [📊 Database Models](#database-models)
 - [🔄 Entity Relationship Diagram](#entity-relationship-diagram)
-- [🌱 Populate Database](#populate-database)
+
+[//]: # (- [🌱 Populate Database]&#40;#populate-database&#41;)
 
 [//]: # (- [➡️ Data Flow]&#40;#data-flow&#41;)
 
-## ⚠️ NB:  
+### ⚠️ NB:  
 - 🗂️ **View the project plans and tracking at a glance in [Project Tab](https://github.com/users/YeakubSadlil/projects/3) and progress in [MileStones](https://github.com/YeakubSadlil/quizbit/milestones)**
 
-## Features
+## ⭐ Features
 
-1. **User Authentication**
+✅. **User Authentication**
 - User Registration with password confirmation
 - OTP based email verification
 - User Login with email and JWT authentication
-2. **Question Retrieval**
+
+✅. **Question Retrieval**
 - Retrieve a question from the database filtered by difficulty
-- Retrieve a list of questions info with related multiple choice option 
-3. **Answer Submission**
-- Submit an answer to a question
+- Retrieve a list of paginated questions info with related multiple choice options 
+
+✅. **Answer Submission**
+- Submit answers in practice mode
 - Validate the answer and check the result
-4. **Quiz Submission**
+
+✅. **Quiz Mode**
 - Start a timed quiz from the quiz list
 - Real time quiz tracking with expiration, completed status
-- Submit all selected solutions in a request
-5. **User Submission History**
+- Submit all selected solutions at once
+
+✅. **User Submission History**
 - Retrieve a list of user submission history, attempt number, accuracy (score) and time taken
 
-## Prerequisites
-- Python 3.8
-- Django REST framework
-- Django Simple JWT
-- PostgreSQL (Database)
+📊. **Performance Monitoring**
+- Prometheus metrics collections
+- Real time dashboards in Grafana for
+    - Djnago performance
+    - Redis usage 
+
+🐳. **Containerization**
+   - Dockerized the full project for easy deployment
+
+[//]: # (## Prerequisites)
+
+[//]: # (- Python 3.8)
+
+[//]: # (- Django REST framework)
+
+[//]: # (- Django Simple JWT)
+
+[//]: # (- PostgreSQL &#40;Database&#41;)
+
+
+
+## Docker Installation
+1. Clone the repository
+```bash
+git clone https://github.com/YeakubSadlil/quizbit.git
+cd quizbit
+```
+2. Create .env file based on the .env.example
+```bash
+cp .env.example .env
+# edit the .env based on your database and email settings
+```
+3. Create the docker container (Web + Database)
+```bash
+docker compose up
+```
+---
+### After building image it will start the list of services below:
+
+| Service            | Description                                                              | Port Mapping<br/>..........................<br/>Host : Container | Access URL / Notes                                                      |
+|--------------------|--------------------------------------------------------------------------|------------------------------------------------------------------|-------------------------------------------------------------------------|
+| **Django Web App** | Backend API built with Django REST Framework                             | `8081:8080`                                                      | http://localhost:8081                                                   |
+| **Postgresql DB**  | Relational database                                                      | `5434:5432`                                                      | Host: `db`<br/> Credentials: postgres/admin                             |
+| **Redis Cache**    | In-memory caching                                                        | `6380:6379`                                                      | Host: `redis-service`, Port: `6379`                                     |
+| **Redis Exporter** | Exposes Redis metrics for monitoring                                     | `9121:9121`                                                      | Metrics: http://localhost:9121/metrics                                  |
+| **Prometheus**     | Collects metrics from services                                           | `9090:9090`                                                      | UI: http://localhost:9090                                               |
+| **Grafana**        | Monitors server performance.<br/>Default provisioned to Django Dashboard | `3000:3000`                                                      | Dashboard: http://localhost:3000 <br>Default credentials: `admin/admin` |
 
 ## Manual Installation
 1. Clone the repository
@@ -77,30 +119,16 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-## Docker Installation
-1. Clone the repository
-```bash
-git clone https://github.com/YeakubSadlil/quizbit.git
-cd quizbit
-```
-2. Create .env file based on the .env.example
-```bash
-cp .env.example .env
-# edit the .env based on your database and email settings
-```
-3. Create the docker container (Web + Database)
-```bash
-docker compose up
-```
+---
 ## Database Models
 1. **Users:** Custom user model with email as the unique identifier
 2. **Question_Category:** Category of each question like Math,Physics,Chemistry etc.
-3. **Questions:** MCQ question with description, difficulty level, correctness and category
+3. **Questions:** MCQ question with description, difficulty level and category
 4. **Choices:** Multiple options for each question is stored with the predefined correct answer
 5. **Quiz:** Quiz configuration including quiz title, duration, categories
 6. **QuizSession:** Tracks individual quiz status, score and timing
 7. **QuizSessionQuestion:** Maps QuizSession and Questions 
-8. **UserSolutions:** Stores user submission history with his answer and time taken
+8. **UserSolutions:** Stores user submission history with answer and time taken
 
 ## Entity Relationship Diagram
 ```mermaid
@@ -189,30 +217,64 @@ erDiagram
     }
 ```
 
-## Populate Database
+[//]: # (## Populate Database)
 
-1. Access admin panel at `http://localhost:8000/admin/`
+[//]: # ()
+[//]: # (1. Access admin panel at `http://localhost:8000/admin/`)
 
-2. Create Question Categories
+[//]: # ()
+[//]: # (2. Create Question Categories)
 
-3. Create Questions
+[//]: # ()
+[//]: # (3. Create Questions)
 
-4. Create Choices for each question
+[//]: # ()
+[//]: # (4. Create Choices for each question)
 
-- Otherwise, import the sample database
+[//]: # ()
+[//]: # (- Otherwise, import the sample database)
 
 ## API Endpoints
 
 | Endpoints                        | Method | Description                          | Authentication Required |
 |----------------------------------|--------|--------------------------------------|-------------------------|
-| `/api/`                          | GET | Home view with endpoints list        | No                      |
-| `/api/register/`                 | POST | Register a new user                  | No                      |
-| `/api/verify-otp/`               | POST | Verify a user with OTP               | No                      |
-| `/api/login/`                    | POST | Login and get JWT token              | No                      |
-| `/api/questionlist/`             | GET | List all questions with filters      | No                      |
-| `/api/question-detail/<int:pk>/` | GET | Get a question with multiple choices | No                      |
-| `/api/submit-answer/`            | POST | Submit answer in practice mode       | Yes                     |
-| `/api/start-quiz/<int:quiz_id>/` | GET | Start a new quiz session             | Yes                     |
-| `/api/submit-quiz/`              | POST | Submit all answers for a quiz        | Yes                     |
-| `/api/user_history/`             | GET | Get user's practice history          | Yes                     |
+| `/api/`                          | GET | Home view with endpoints list        | ❌                      |
+| `/api/register/`                 | POST | Register a new user                  | ❌                      |
+| `/api/verify-otp/`               | POST | Verify a user with OTP               | ❌                      |
+| `/api/login/`                    | POST | Login and get JWT token              | ❌                      |
+| `/api/questionlist/`             | GET | List all questions with filters      | ❌                      |
+| `/api/question-detail/<int:pk>/` | GET | Get a question with multiple choices | ❌                      |
+| `/api/submit-answer/`            | POST | Submit answer in practice mode       | ✅                     |
+| `/api/start-quiz/<int:quiz_id>/` | GET | Start a new quiz session             | ✅                     |
+| `/api/submit-quiz/`              | POST | Submit all answers for a quiz        | ✅                     |
+| `/api/user_history/`             | GET | Get user's practice history          | ✅                     |
 | `/admin/`                        | GET | Admin interface                      | Admin only              |
+
+
+## Directory Structure
+
+```
+quizbit/
+├── quiz/                   # Django app 
+│   ├── migrations/
+│   ├── serializers.py
+│   ├── views.py
+│   ├── models.py
+│   └── ...
+├── monitoring/
+│   ├── prometheus.yml
+│   └── Grafana_Dashboards/
+│        └── dashboard.yml
+│        └── Django-Dashboard.json
+├── .env
+├── sample_database
+│   └── sample_db.sql
+├── postman_collections
+├── docker-compose.yml
+├── Dockerfile
+├── manage.py
+└── README.md
+```
+
+## 💬 Support
+For any suggestions or issues, please [open an issue](https://github.com/YeakubSadlil/quizbit/issues).

@@ -7,3 +7,4 @@ quiz/migrations/
 qodana.yaml
 quiz/test.py
 .postman
+test.md
