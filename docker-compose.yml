@@ -1,6 +1,7 @@
 services:
   db:
     image: postgres:17.4
+    container_name: postgresDB
     ports:
       - "5434:5432"
     environment:
@@ -9,8 +10,8 @@ services:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      # import the dumped sample_db.sql N.B: remove migrations and migrate from below while importing and run first time only while building image
-      # - ./sample_database/sample_db.sql:/docker-entrypoint-initdb.d/sample_db.sql
+      # populate the sample db once
+      - ./sample_database/sample_db.sql:/docker-entrypoint-initdb.d/sample_db.sql
     env_file:
       - .env
 
@@ -40,6 +41,8 @@ services:
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-data:/prometheus
+    depends_on:
+      - django_web
 
   grafana:
     image: grafana/grafana-enterprise
@@ -70,15 +73,15 @@ services:
       - REDIS_HOST=redis-service
     volumes:
       - .:/app
-#    command: >
-#      sh -c "while ! nc -z db 5432; do echo '⏳ waiting for PostgreSQL...'; sleep 1; done &&
-#             python manage.py runserver 0.0.0.0:8080"
-
     command: >
       sh -c "while ! nc -z db 5432; do echo '⏳ waiting for PostgreSQL...'; sleep 1; done &&
-            python manage.py makemigrations --noinput &&
-            python manage.py migrate &&
-            python manage.py runserver 0.0.0.0:8080"
+             python manage.py runserver 0.0.0.0:8080"
+
+#    command: >
+#      sh -c "while ! nc -z db 5432; do echo '⏳ waiting for PostgreSQL...'; sleep 1; done &&
+#            python manage.py makemigrations --noinput &&
+#            python manage.py migrate &&
+#            python manage.py runserver 0.0.0.0:8080"
 
 volumes:
   postgres_data:
