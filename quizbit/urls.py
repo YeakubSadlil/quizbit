@@ -6,4 +6,5 @@ urlpatterns = [
     path('', HomeView.as_view(), name = 'Home'),
     path('admin/', admin.site.urls),
     path('api/', include('quiz.urls')),
+    path('', include('django_prometheus.urls')),
 ]
