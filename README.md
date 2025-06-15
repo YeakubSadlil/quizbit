@@ -22,15 +22,17 @@
 - [📊 Monitoring](#-monitoring)
 - [📈 Database Models](#-database-models)
 - [🔄 Entity Relationship Diagram](#-entity-relationship-diagram)
+- [📂 Directory Structure](#-directory-structure)
 - [💬 Feedback](#-support)
 
 [//]: # (- [🌱 Populate Database]&#40;#populate-database&#41;)
 
 [//]: # (- [➡️ Data Flow]&#40;#data-flow&#41;)
 
-### ⚠️ NB:  
-- 🗂️ **View the project plans and tracking at a glance in [Project Tab](https://github.com/users/YeakubSadlil/projects/3) and progress in [MileStones](https://github.com/YeakubSadlil/quizbit/milestones)**
+---
+#### ⚠️ NB: View the project plans and tracking at a glance in [Project Tab](https://github.com/users/YeakubSadlil/projects/3) and progress in [MileStones](https://github.com/YeakubSadlil/quizbit/milestones)
 
+---
 ## ⭐ Features
 
 ✅. **User Authentication**
@@ -135,7 +137,7 @@ python manage.py createsuperuser
 ### Running the project
 
 **With Docker:** If you follow the docker installation, the services are managed by docker compose.
-- **Access the API:** The API will be available at `http://localhost:8081`
+- **Access the API:** The API will be available at [http://localhost:8081](http://localhost:8081)
 - **Stop services:**
 ```bash
 docker compose down
@@ -143,7 +145,7 @@ docker compose down
 
 **Manual Setup:** If you follow the manual installation:
 1. Ensure the Postgresql and Redis servers are running and correctly configured in your .env file.
-2. Run the Django development server:
+2. Run the Django development server and access at http://localhost:8080
 ```bash
 python manage.py runserver
 ```
@@ -171,9 +173,9 @@ For a comprehensive list and to interact with API import the **postman collectio
 ## 📊 Monitoring
 The application performance is monitored by:
 - **Prometheus:** Collects metrics from the application (via django-prometheus package) and Redis (via redis-exporter).
-  - Access `Prometheus` at http://localhost:9090
+  - Access `Prometheus` at [http://localhost:9090](http://localhost:9090)
 - **Grafana:** Visualize the collected metrics in`Grafana`. Pre-configured dashboard are provisioned and will be automatically available during container startup.
-  - Access `Grafana` at http://localhost:3000 (default credentials: admin/admin)
+  - Access `Grafana` at [http://localhost:3000](http://localhost:3000) (default credentials: admin/admin)
 
 **N.B:** If you follow`Docker`installation then above services will be automatically available after building images.  
 
@@ -293,7 +295,7 @@ erDiagram
 [//]: # (- Otherwise, import the sample database)
 
 
-## Directory Structure
+## 📂 Directory Structure
 
 ```
 quizbit/

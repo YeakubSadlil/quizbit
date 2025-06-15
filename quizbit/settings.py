@@ -78,7 +78,21 @@ DATABASES = {
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20,
+
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '5/day',
+        'user': '1000/day',
+        'login': '80/day',
+        'register': '20/day',
+    }
 }
 
 # Password validation
@@ -133,11 +147,6 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = os.getenv("E_PORT")
 EMAIL_HOST_USER = os.getenv("E_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("E_HOST_PASSWORD")
-
-REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 20
-}
 
 CACHES = {
     "default": {

@@ -1,13 +1,16 @@
-from django.core.management.base import BaseCommand
-from quiz.models import Questions, Question_Category
-from faker import Faker
 import random
 
+from django.core.management.base import BaseCommand
+from faker import Faker
+
+from quiz.models import Questions, Question_Category
+
+
 class Command(BaseCommand):
-    help="Generate sample question to populate database"
+    help = "Generate sample question to populate database"
 
     def add_arguments(self, parser):
-        parser.add_argument("--total", type=int, default= 10, help = "number of questions to generate")
+        parser.add_argument("--total", type=int, default=10, help="number of questions to generate")
 
     def handle(self, *args, **options):
         fake = Faker()
@@ -17,8 +20,8 @@ class Command(BaseCommand):
         for _ in range(total):
             question = Questions(
                 category=random.choice(categories),
-                text=fake.sentence(nb_words=random.randint(5,15) ) + '?',
-                difficulty= random.choice(['easy','medium','hard']),
+                text=fake.sentence(nb_words=random.randint(5, 15)) + '?',
+                difficulty=random.choice(['easy', 'medium', 'hard']),
                 is_active=True
             )
 

@@ -1,15 +1,14 @@
-from django.db import models
-from django.conf import settings
+from datetime import timedelta
 
+from django.conf import settings
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
+from django.db import models
 from django.db.models import BooleanField
 from django.utils import timezone
-from datetime import timedelta
 
 
 class UserManager(BaseUserManager):
     def create_user(self, email, name, password=None, password2=None):
-
         if not email:
             raise ValueError("Users must have an email address")
 
@@ -23,7 +22,6 @@ class UserManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, name, password=None):
-
         user = self.create_user(
             email,
             password=password,
@@ -33,6 +31,7 @@ class UserManager(BaseUserManager):
         user.is_active = True
         user.save(using=self._db)
         return user
+
 
 class Users(AbstractBaseUser):
     """
@@ -48,7 +47,7 @@ class Users(AbstractBaseUser):
     is_active = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
-    otp = models.CharField(max_length=6,null=True,blank=True)
+    otp = models.CharField(max_length=6, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     objects = UserManager()
@@ -69,6 +68,7 @@ class Users(AbstractBaseUser):
     def is_staff(self):
         return self.is_admin
 
+
 class Question_Category(models.Model):
     """
     Category of each question like Math,Physics,Chemistry etc
@@ -80,14 +80,15 @@ class Question_Category(models.Model):
     def __str__(self):
         return self.name
 
+
 class Questions(models.Model):
     """
     MCQ question with description, difficulty level, correctness and category
     """
     difficulty_choice = [
-        ('easy','Easy'),
-        ('medium','Medium'),
-        ('hard','Hard'),
+        ('easy', 'Easy'),
+        ('medium', 'Medium'),
+        ('hard', 'Hard'),
     ]
 
     category = models.ForeignKey(Question_Category, on_delete=models.CASCADE)
@@ -99,17 +100,19 @@ class Questions(models.Model):
     def __str__(self):
         return self.text[:40]
 
+
 class Choices(models.Model):
     """
     Multiple options for each question is stored with the predefined correct answer
     """
-    question = models.ForeignKey(Questions,on_delete=models.CASCADE, db_column='question_id')
+    question = models.ForeignKey(Questions, on_delete=models.CASCADE, db_column='question_id')
     option = models.TextField(max_length=200, null=True)
     is_correct = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.option
+
 
 class Quiz(models.Model):
     """
@@ -128,23 +131,24 @@ class Quiz(models.Model):
     class Meta:
         db_table = 'quiz_info'
 
+
 class QuizSession(models.Model):
     """
     Tracks individual quiz status, score and timing
     """
     status_choices = [
-        ('expired','Expired'),
-        ('not_started','Not Started'),
-        ('completed','Completed'),
-        ('in_progress','In Progress')
+        ('expired', 'Expired'),
+        ('not_started', 'Not Started'),
+        ('completed', 'Completed'),
+        ('in_progress', 'In Progress')
     ]
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     quiz_id = models.ForeignKey(Quiz, on_delete=models.CASCADE)
-    status = models.CharField(max_length=50,choices=status_choices,default='not_started')
-    questions = models.ManyToManyField(Questions,through='QuizSessionQuestion')
+    status = models.CharField(max_length=50, choices=status_choices, default='not_started')
+    questions = models.ManyToManyField(Questions, through='QuizSessionQuestion')
     start_time = models.DateTimeField(null=True, blank=True)
     end_time = models.DateTimeField(null=True, blank=True)
-    score = models.IntegerField(null=True,blank=True)
+    score = models.IntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def start_quiz(self):
@@ -162,6 +166,7 @@ class QuizSession(models.Model):
         else:
             return False
 
+
 class QuizSessionQuestion(models.Model):
     """
     Maps QuizSession and Questions
@@ -173,18 +178,19 @@ class QuizSessionQuestion(models.Model):
     class Meta:
         ordering = ['question_order']
 
+
 class UserSolutions(models.Model):
     """
     Stores user submission history with his answer and time taken
     """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    question = models.ForeignKey(Questions,on_delete=models.CASCADE)
-    selected_answer = models.ForeignKey(Choices,on_delete=models.CASCADE)
+    question = models.ForeignKey(Questions, on_delete=models.CASCADE)
+    selected_answer = models.ForeignKey(Choices, on_delete=models.CASCADE)
     is_correct = models.BooleanField(default=False)
     answered_at = models.DateTimeField(auto_now_add=True)
     quiz_session = models.ForeignKey(QuizSession, on_delete=models.CASCADE, null=True, blank=True)
     attempt_types = [
-        ('practice','Practice Mode'),
-        ('quiz','Quiz Exam')
+        ('practice', 'Practice Mode'),
+        ('quiz', 'Quiz Exam')
     ]
-    attempt_type = models.CharField(max_length=20,choices=attempt_types,default='practice')
+    attempt_type = models.CharField(max_length=20, choices=attempt_types, default='practice')
