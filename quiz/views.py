@@ -1,3 +1,5 @@
+import logging
+
 from django.core.cache import cache
 from rest_framework import status, permissions
 from rest_framework.exceptions import ValidationError
@@ -10,6 +12,8 @@ from . import models, serializers
 from .emails import *
 from .serializers import UserRegistrationSerializer, UserLoginSerializer, QuizSessionSerializer
 from .throttles import LoginThrottle, RegisterThrottle
+
+logger = logging.getLogger(__name__)
 
 
 class HomeView(APIView):
@@ -42,6 +46,7 @@ def get_tokens(user):
 
 
 class RegistrationView(APIView):
+    logger = logging.info("Registration Started")
     throttle_classes = [RegisterThrottle]
 
     def post(self, request):
@@ -52,6 +57,7 @@ class RegistrationView(APIView):
             existing_user = models.Users.objects.filter(email=email).first()
 
             if existing_user and not existing_user.is_active:
+                logger.warning("User %s is already exist but not verified. Resending OTP to: " % email)
                 send_otp_via_email(email)
 
                 return Response({
@@ -61,11 +67,13 @@ class RegistrationView(APIView):
             serializer.save()
             send_otp_via_email(serializer.data['email'])
 
+            logger.info("OTP sent for user: %s successfully" % email)
             return Response({
                 'msg': 'An OTP has been sent to your email. Please check your inbox or spam folder.'
             }, status=status.HTTP_200_OK)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            logger.error("Registration failed: %s" % serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class VerifyOTPView(APIView):

@@ -1,0 +1,1 @@
+#### All app log is stored here in JSON format by python logger

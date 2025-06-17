@@ -9,3 +9,4 @@ quiz/test.py
 .postman
 test.md
 test1.md
+logs/app.log
