@@ -89,10 +89,10 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle'
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '5/day',
+        'anon': '100/day',
         'user': '1000/day',
-        'login': '80/day',
-        'register': '20/day',
+        'login': '100/day',
+        'register': '30/day',
     }
 }
 
@@ -163,7 +163,7 @@ LOGGING = {
     "disable_existing_loggers": False,
     "formatters": {
         "clean": {
-            "()": "pythonjsonlogger.jsonlogger.JsonFormatter",
+            "()": "pythonjsonlogger.json.JsonFormatter",
             "format": "{levelname} [{asctime}] {module}:{lineno} {message}",
             "style": "{",
         },
