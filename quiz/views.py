@@ -50,24 +50,37 @@ class RegistrationView(APIView):
     throttle_classes = [RegisterThrottle]
 
     def post(self, request):
+        email = request.data.get("email")
+        if not email:
+            return Response(
+                {"email": ["This field is required."]}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        existing_user = models.Users.objects.filter(email=email).first()
+
+        if existing_user:
+            # user is deactivated
+            if not existing_user.is_active and existing_user.is_verified:
+                logger.warning("User '%s' is deactivated" % email)
+                return Response({
+                    "msg": "User is deactivated. Please contact the administrator"
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            # user exists but not verified yet
+            if not existing_user.is_active and not existing_user.is_verified:
+                logger.warning("User '%s' is already exist but not verified. Resending OTP" % email)
+                send_otp_via_email(email)
+                return Response({
+                    "msg": "The user is already registered but not verified. A new OTP has been sent to your mail"
+                }, status=status.HTTP_200_OK)
+
         serializer = UserRegistrationSerializer(data=request.data)
 
         if serializer.is_valid():
-            email = serializer.validated_data['email']
-            existing_user = models.Users.objects.filter(email=email).first()
-
-            if existing_user and not existing_user.is_active:
-                logger.warning("User %s is already exist but not verified. Resending OTP to: " % email)
-                send_otp_via_email(email)
-
-                return Response({
-                    'msg': 'The user is already registered but not verified. A new OTP has been sent to your mail'
-                }, status=status.HTTP_200_OK)
-
             serializer.save()
             send_otp_via_email(serializer.data['email'])
-
             logger.info("OTP sent for user: %s successfully" % email)
+
             return Response({
                 'msg': 'An OTP has been sent to your email. Please check your inbox or spam folder.'
             }, status=status.HTTP_200_OK)
