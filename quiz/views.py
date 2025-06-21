@@ -1,6 +1,7 @@
 import logging
 
 from django.core.cache import cache
+from django.utils.decorators import method_decorator
 from rest_framework import status, permissions
 from rest_framework.exceptions import ValidationError
 from rest_framework.pagination import PageNumberPagination
@@ -12,18 +13,19 @@ from . import models, serializers
 from .emails import *
 from .serializers import UserRegistrationSerializer, UserLoginSerializer, QuizSessionSerializer
 from .throttles import LoginThrottle, RegisterThrottle
+from django.views.decorators.cache import cache_page
 
 logger = logging.getLogger(__name__)
 
-
+@method_decorator(cache_page(60 * 5), name='dispatch')
 class HomeView(APIView):
     """
-    Home view for the root URL
+    Return API endpoints
     """
 
     def get(self, request):
         return Response({
-            "msg": "This is QuizBit, a MCQ Simulation API!",
+            "msg": "QuizBit, a MCQ Simulation API!",
             "endpoints": {
                 "register": "/api/register/",
                 "verify otp": "/api/verify-otp/",
@@ -38,6 +40,11 @@ class HomeView(APIView):
 
 
 def get_tokens(user):
+    """
+    Generate JWT tokens for user
+    param: user:
+    returns: Dict of access tokens and refresh tokens
+    """
     refresh_token = RefreshToken.for_user(user)
     return {
         'refresh': str(refresh_token),
@@ -46,17 +53,21 @@ def get_tokens(user):
 
 
 class RegistrationView(APIView):
-    logger = logging.info("Registration Started")
+    """
+    User registration endpoint with OTP verification
+    """
     throttle_classes = [RegisterThrottle]
 
     def post(self, request):
+        logger.info("Registration Started")
+
         email = request.data.get("email")
         if not email:
             return Response(
                 {"email": ["This field is required."]}, status=status.HTTP_400_BAD_REQUEST
             )
 
-        existing_user = models.Users.objects.filter(email=email).first()
+        existing_user = models.Users.objects.only("is_active","is_verified").filter(email=email).first()
 
         if existing_user:
             # user is deactivated
