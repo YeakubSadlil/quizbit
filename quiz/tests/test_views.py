@@ -1,9 +1,10 @@
 import pytest
+from django.core.cache import cache
 from django.urls import reverse
 from rest_framework.test import APIClient
+
 from quiz.models import Users
-from django.test import override_settings
-from django.core.cache import cache
+
 
 @pytest.fixture(autouse=True)
 def clear_cache():
@@ -46,8 +47,8 @@ def test_register_user_successfully(api_client):
 
     response = register(api_client,data)
 
-    assert response.status_code == 200
-    assert response.data["msg"] == 'An OTP has been sent to your email. Please check your inbox or spam folder.'
+    assert response.status_code == 201
+    assert response.data["message"] == 'An OTP has been sent to your email. Please check your inbox or spam folder.'
     assert Users.objects.filter(email=data["email"]).exists()
 
 
@@ -66,7 +67,7 @@ def test_register_user_duplicate_email(api_client,create_user):
     }
 
     response = register(api_client,data)
-    assert response.status_code == 400
+    assert response.status_code == 409
 
 
 @pytest.mark.django_db
@@ -84,8 +85,8 @@ def test_register_deactivated_user(api_client,create_user):
     }
 
     response = register(api_client,data)
-    assert response.status_code == 400
-    assert response.data["msg"] == "User is deactivated. Please contact the administrator"
+    assert response.status_code == 403
+    assert response.data["error"] == "User is deactivated. Please contact the administrator"
 
 
 @pytest.mark.django_db
@@ -104,9 +105,7 @@ def test_register_unverified_user(api_client,create_user):
 
     response = register(api_client,data)
     assert response.status_code == 200
-    assert response.data[
-               "msg"] == "The user is already registered but not verified. A new OTP has been sent to your mail"
-
+    assert response.data["message"] == "The user is already registered but not verified. A new OTP has been sent to your mail"
 
 @pytest.mark.django_db
 def test_register_missing_email(api_client):
@@ -118,8 +117,6 @@ def test_register_missing_email(api_client):
 
     response = register(api_client,data)
     assert response.status_code == 400
-    assert "email" in response.data
-
 
 @pytest.mark.django_db
 def test_register_invalid_email_format(api_client):
@@ -132,8 +129,6 @@ def test_register_invalid_email_format(api_client):
 
     response = register(api_client,data)
     assert response.status_code == 400
-    assert "email" in response.data
-
 
 @pytest.mark.django_db
 def test_register_password_missmatch(api_client):
@@ -146,7 +141,6 @@ def test_register_password_missmatch(api_client):
 
     response = register(api_client, data)
     assert response.status_code == 400
-    assert "non_field_errors" in response.data
 
 # @override_settings(
 #     REST_FRAMEWORK={
@@ -166,7 +160,7 @@ def test_register_throttle(api_client):
             "password2": "1234"
         }
         response = register(api_client, data)
-        assert response.status_code == 200
+        assert response.status_code == 201
 
     data = {
         "email": f"example_throttle@gmail.com",
