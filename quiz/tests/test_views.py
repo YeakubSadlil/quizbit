@@ -58,6 +58,20 @@ def test_register_user_successfully(mock_send_otp, api_client):
 
 
 @pytest.mark.django_db
+@patch("quiz.views.send_otp_via_email", side_effect=Exception("Mail service down"))
+def test_register_email_send_failure(mock_send_otp, api_client):
+    data = {
+        "email": "sh4568@gmail.com",
+        "name": "Shahed Afridi",
+        "password": "1234",
+        "password2": "1234"
+    }
+
+    response = register(api_client, data)
+    assert response.status_code == 500
+
+
+@pytest.mark.django_db
 def test_register_user_duplicate_email(api_client, create_user):
     user = create_user(email="duplicate@gmail.com", name="Existing User", password="1234")
     user.is_active = True
