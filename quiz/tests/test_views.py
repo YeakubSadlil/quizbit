@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 import pytest
 from django.core.cache import cache
 from django.urls import reverse
@@ -10,9 +12,11 @@ from quiz.models import Users
 def clear_cache():
     cache.clear()
 
+
 @pytest.fixture()
 def api_client():
     return APIClient()
+
 
 @pytest.fixture()
 def create_user():
@@ -22,7 +26,7 @@ def create_user():
     return create_users
 
 
-def register(api_client,data):
+def register(api_client, data):
     url = reverse("register")
     return api_client.post(url, data, format="json")
 
@@ -36,8 +40,8 @@ def test_home_view(request):
 
 
 @pytest.mark.django_db
-def test_register_user_successfully(api_client):
-
+@patch("quiz.views.send_otp_via_email")
+def test_register_user_successfully(mock_send_otp, api_client):
     data = {
         "email": "sh4568@gmail.com",
         "name": "Shahed Afridi",
@@ -45,15 +49,16 @@ def test_register_user_successfully(api_client):
         "password2": "1234"
     }
 
-    response = register(api_client,data)
+    response = register(api_client, data)
 
     assert response.status_code == 201
     assert response.data["message"] == 'An OTP has been sent to your email. Please check your inbox or spam folder.'
     assert Users.objects.filter(email=data["email"]).exists()
+    mock_send_otp.assert_called_once_with(data["email"])
 
 
 @pytest.mark.django_db
-def test_register_user_duplicate_email(api_client,create_user):
+def test_register_user_duplicate_email(api_client, create_user):
     user = create_user(email="duplicate@gmail.com", name="Existing User", password="1234")
     user.is_active = True
     user.is_verified = True
@@ -66,12 +71,12 @@ def test_register_user_duplicate_email(api_client,create_user):
         "password2": "1234"
     }
 
-    response = register(api_client,data)
+    response = register(api_client, data)
     assert response.status_code == 409
 
 
 @pytest.mark.django_db
-def test_register_deactivated_user(api_client,create_user):
+def test_register_deactivated_user(api_client, create_user):
     user = create_user(email="deactivated_user@gmail.com", name="Deactivated User", password="pass123")
     user.is_active = False
     user.is_verified = True
@@ -84,13 +89,14 @@ def test_register_deactivated_user(api_client,create_user):
         "password2": "1234"
     }
 
-    response = register(api_client,data)
+    response = register(api_client, data)
     assert response.status_code == 403
     assert response.data["error"] == "User is deactivated. Please contact the administrator"
 
 
 @pytest.mark.django_db
-def test_register_unverified_user(api_client,create_user):
+@patch("quiz.views.send_otp_via_email")
+def test_register_unverified_user(mock_send_otp, api_client, create_user):
     user = create_user(email="unverified_user@gmail.com", name="Unverified User", password="pass123")
     user.is_active = False
     user.is_verified = False
@@ -103,9 +109,12 @@ def test_register_unverified_user(api_client,create_user):
         "password2": "1234"
     }
 
-    response = register(api_client,data)
+    response = register(api_client, data)
     assert response.status_code == 200
-    assert response.data["message"] == "The user is already registered but not verified. A new OTP has been sent to your mail"
+    assert response.data[
+               "message"] == "The user is already registered but not verified. A new OTP has been sent to your mail"
+    mock_send_otp.assert_called_once_with(data["email"])
+
 
 @pytest.mark.django_db
 def test_register_missing_email(api_client):
@@ -115,8 +124,9 @@ def test_register_missing_email(api_client):
         "password2": "1234"
     }
 
-    response = register(api_client,data)
+    response = register(api_client, data)
     assert response.status_code == 400
+
 
 @pytest.mark.django_db
 def test_register_invalid_email_format(api_client):
@@ -127,8 +137,9 @@ def test_register_invalid_email_format(api_client):
         "password2": "1234"
     }
 
-    response = register(api_client,data)
+    response = register(api_client, data)
     assert response.status_code == 400
+
 
 @pytest.mark.django_db
 def test_register_password_missmatch(api_client):
@@ -142,6 +153,7 @@ def test_register_password_missmatch(api_client):
     response = register(api_client, data)
     assert response.status_code == 400
 
+
 # @override_settings(
 #     REST_FRAMEWORK={
 #         'DEFAULT_THROTTLE_CLASSES': ['quiz.throttles.RegisterThrottle'],
@@ -151,7 +163,8 @@ def test_register_password_missmatch(api_client):
 #     }
 # )
 @pytest.mark.django_db
-def test_register_throttle(api_client):
+@patch("quiz.views.send_otp_via_email")
+def test_register_throttle(mock_send_otp, api_client):
     for i in range(50):
         data = {
             "email": f"example{i}@gmail.com",
@@ -171,3 +184,4 @@ def test_register_throttle(api_client):
 
     response = register(api_client, data)
     assert response.status_code == 429
+    assert mock_send_otp.call_count == 50
