@@ -4,9 +4,13 @@ import pytest
 from django.core.cache import cache
 from django.urls import reverse
 from rest_framework.test import APIClient
-
+from rest_framework.throttling import AnonRateThrottle
+from quiz.views import RegistrationView
 from quiz.models import Users
 
+class TestRegisterThrottle(AnonRateThrottle):
+    scope = "test_register",
+    rate = "5/min"
 
 @pytest.fixture(autouse=True)
 def clear_cache():
@@ -167,35 +171,32 @@ def test_register_password_missmatch(api_client):
     response = register(api_client, data)
     assert response.status_code == 400
 
-
-# @override_settings(
-#     REST_FRAMEWORK={
-#         'DEFAULT_THROTTLE_CLASSES': ['quiz.throttles.RegisterThrottle'],
-#         'DEFAULT_THROTTLE_RATES': {
-#             'register': '30/min',
-#         }
-#     }
-# )
 @pytest.mark.django_db
 @patch("quiz.views.send_otp_via_email")
 def test_register_throttle(mock_send_otp, api_client):
-    for i in range(50):
+    # override default throttling for test purpose
+    original_throttle = RegistrationView.throttle_classes
+    RegistrationView.throttle_classes = [TestRegisterThrottle]
+    try:
+        for i in range(5):
+            data = {
+                "email": f"example{i}@gmail.com",
+                "name": "User Name",
+                "password": "1234",
+                "password2": "1234"
+            }
+            response = register(api_client, data)
+            assert response.status_code == 201
+
         data = {
-            "email": f"example{i}@gmail.com",
+            "email": f"example_throttle@gmail.com",
             "name": "User Name",
             "password": "1234",
             "password2": "1234"
         }
+
         response = register(api_client, data)
-        assert response.status_code == 201
-
-    data = {
-        "email": f"example_throttle@gmail.com",
-        "name": "User Name",
-        "password": "1234",
-        "password2": "1234"
-    }
-
-    response = register(api_client, data)
-    assert response.status_code == 429
-    assert mock_send_otp.call_count == 50
+        assert response.status_code == 429
+        assert mock_send_otp.call_count == 5  # 6th call will be throttled
+    finally:
+        RegistrationView.throttle_classes = original_throttle
