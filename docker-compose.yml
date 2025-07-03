@@ -42,7 +42,7 @@ services:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-data:/prometheus
     depends_on:
-      - django_web
+      - django_base
 
   grafana:
     image: grafana/grafana-enterprise
@@ -52,17 +52,15 @@ services:
     volumes:
       - grafana-storage:/var/lib/grafana
       - ./monitoring/Grafana_Dashboards:/etc/grafana/provisioning/dashboards
-      - ./monitoring/Grafana_Dashboards/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
-      - ./monitoring/Grafana_Dashboards/dashboard.yml:/etc/grafana/provisioning/dashboards/dashboard.yml
+      - ./monitoring/Grafana_Dashboards/datasource.yml:/etc/grafana/provisioning/datasource/datasource.yml
+      - ./monitoring/Grafana_Dashboards/dashboard.yml:/etc/grafana/provisioning/dashboard/dashboard.yml
     depends_on:
       - prometheus
 
-  django_web:
+  django_base: &django_app
     build: .
     image: quizbit-django_web:1.0.1
     container_name: django-docker
-    ports:
-      - "8081:8080"
     depends_on:
       - db
       - redis
@@ -75,13 +73,37 @@ services:
       - .:/app
     command: >
       sh -c "while ! nc -z db 5432; do echo '⏳ waiting for PostgreSQL...'; sleep 1; done &&
-             python manage.py runserver 0.0.0.0:8080"
+             gunicorn --bind 0.0.0.0:8080 quizbit.wsgi:application --workers 2 --timeout 60"
 
 #    command: >
 #      sh -c "while ! nc -z db 5432; do echo '⏳ waiting for PostgreSQL...'; sleep 1; done &&
 #            python manage.py makemigrations --noinput &&
 #            python manage.py migrate &&
 #            python manage.py runserver 0.0.0.0:8080"
+
+  django_web1:
+    <<: *django_app
+    container_name: node_1
+    ports:
+      - "8081:8080"
+
+  django_web2:
+    <<: *django_app
+    container_name: node_2
+    ports:
+      - "8082:8080"
+
+  nginx_lb:
+    image: nginx:alpine
+    container_name: nginx_lb
+    ports:
+      - "8085:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./logs/nginx:/var/log/nginx
+    depends_on:
+      - django_web1
+      - django_web2
 
 volumes:
   postgres_data:

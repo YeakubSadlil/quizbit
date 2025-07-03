@@ -12,3 +12,4 @@ django-prometheus
 python-json-logger
 pytest-django
 pytest
+gunicorn
