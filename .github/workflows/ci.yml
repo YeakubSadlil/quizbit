@@ -1,0 +1,13 @@
+name: Hello CI
+
+on:
+  push:
+    branches:
+      - development
+
+jobs:
+  say-hello:
+    runs-on: ubuntu-latest
+    steps:
+    -name: Hello
+    run: echo "Hello, it is CI"
