@@ -3,7 +3,7 @@ name: Hello CI
 on:
   push:
     branches:
-      - development
+      - phase-5_scalibility_optimization
 
 jobs:
   say-hello:
