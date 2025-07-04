@@ -10,3 +10,5 @@ quiz/test.py
 test.md
 test1.md
 logs/app.log
+logs/nginx/access.log
+logs/nginx/error.log
