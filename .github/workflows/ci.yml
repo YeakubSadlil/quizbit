@@ -6,7 +6,7 @@ on:
       - phase-5_scalibility_optimization
 
 jobs:
-  setup-&-install:
+  setup-and-install:
     runs-on: ubuntu-latest
 
     services:
@@ -38,7 +38,7 @@ jobs:
           echo "DB_PASSWORD=test_password" >> .env
           echo "DB_HOST=localhost" >> .env
           echo "DJANGO_Scrt_KEY=secret-key" >> .env
-          
+
       - name: Apply migration
         run: |
           while ! pg_isready -h ${DB_HOST} -p 5432; do
