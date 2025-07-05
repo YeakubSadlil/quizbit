@@ -41,8 +41,8 @@ jobs:
 
       - name: Apply migration
         run: |
-          while ! pg_isready -h ${DB_HOST} -p 5432; do
-            echo '⏳ waiting for PostgreSQL...'
+          until pg_isready -h ${DB_HOST} -p 5432; do
+            echo '⏳ waiting for PostgresSQL...'
             sleep 2
           done
           python manage.py makemigrations --noinput
