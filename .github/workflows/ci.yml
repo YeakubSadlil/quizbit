@@ -14,6 +14,7 @@ jobs:
       DB_USER: postgres
       DB_PASSWORD: test_pass
       DB_HOST: localhost
+      REDIS_HOST: localhost
       DJANGO_Scrt_KEY: test-secret-key
 
     services:
