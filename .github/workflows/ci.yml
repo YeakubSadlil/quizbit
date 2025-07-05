@@ -8,6 +8,16 @@ on:
 jobs:
   setup-install:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17.4
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: quizbit
+        ports:
+          - 5432:5432
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -20,7 +30,20 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
-          
-      - name: List installed packages
+
+      - name: Set env variables
         run: |
-          pip list
+          echo "DB_NAME=db_name" >> .env
+          echo "DB_USER=db_user" >> .env
+          echo "DB_PASSWORD=test_password" >> .env
+          echo "DB_HOST=localhost" >> .env
+          echo "DJANGO_Scrt_KEY=secret-key" >> .env
+          
+      - name: Apply migration
+        run: |
+          python manage.py makemigrations --noinput
+          python manage.py migrate
+
+      - name: Rune tests
+        run:  |
+          pytest
