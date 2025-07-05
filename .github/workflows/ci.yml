@@ -26,6 +26,22 @@ jobs:
           POSTGRES_DB: ${{env.DB_NAME}}
         ports:
           - 5432:5432
+        options: >-
+          --health-cmd pg_isready 
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5s
+
+      redis:
+        image: redis:alpine
+        ports:
+          - "6379:6379"
+        options: >-
+          --health-cmd "redis-cli ping" 
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5s
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -41,10 +57,6 @@ jobs:
 
       - name: Apply migration
         run: |
-          until pg_isready -h ${DB_HOST} -p 5432; do
-            echo '⏳ waiting for PostgresSQL...'
-            sleep 2
-          done
           python manage.py makemigrations --noinput
           python manage.py migrate
 
