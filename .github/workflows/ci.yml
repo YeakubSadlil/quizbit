@@ -6,7 +6,7 @@ on:
       - phase-5_scalibility_optimization
 
 jobs:
-  setup-install:
+  setup-&-install:
     runs-on: ubuntu-latest
 
     services:
@@ -41,9 +41,13 @@ jobs:
           
       - name: Apply migration
         run: |
+          while ! pg_isready -h ${DB_HOST} -p 5432; do
+            echo '⏳ waiting for PostgreSQL...'
+            sleep 2
+          done
           python manage.py makemigrations --noinput
           python manage.py migrate
 
       - name: Rune tests
-        run:  |
+        run: |
           pytest
