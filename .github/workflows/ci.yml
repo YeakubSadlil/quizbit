@@ -9,13 +9,20 @@ jobs:
   setup-and-install:
     runs-on: ubuntu-latest
 
+    env:
+      DB_NAME: quizbit
+      DB_USER: postgres
+      DB_PASSWORD: test_pass
+      DB_HOST: localhost
+      DJANGO_Scrt_KEY: test-secret-key
+
     services:
       postgres:
         image: postgres:17.4
         env:
-          POSTGRES_USER: ${DB_USER}
-          POSTGRES_PASSWORD: ${DB_PASSWORD}
-          POSTGRES_DB: ${DB_NAME}
+          POSTGRES_USER: ${{env.DB_USER}}
+          POSTGRES_PASSWORD: ${{env.DB_PASSWORD}}
+          POSTGRES_DB: ${{env.DB_NAME}}
         ports:
           - 5432:5432
     steps:
@@ -30,14 +37,6 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
-
-      - name: Set env variables
-        run: |
-          echo "DB_NAME=db_name" >> .env
-          echo "DB_USER=db_user" >> .env
-          echo "DB_PASSWORD=test_password" >> .env
-          echo "DB_HOST=localhost" >> .env
-          echo "DJANGO_Scrt_KEY=secret-key" >> .env
 
       - name: Apply migration
         run: |
