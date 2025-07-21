@@ -1,9 +1,12 @@
-name: Hello CI
+name: Django App CI
 
 on:
   push:
     branches:
       - phase-5_scalibility_optimization
+  pull_request:
+    branches:
+      - version_2
 
 jobs:
   setup-and-install:

@@ -12,7 +12,15 @@ SECRET_KEY = os.getenv("DJANGO_Scrt_KEY")
 
 DEBUG = False
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "node1",
+    "node2",
+    "django_web1",
+    "django_web2",
+    "nginx_lb",
+]
 
 # Application definition
 
