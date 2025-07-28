@@ -1,7 +1,7 @@
-from rest_framework.throttling import UserRateThrottle
+from rest_framework.throttling import UserRateThrottle, AnonRateThrottle
 
 class LoginThrottle(UserRateThrottle):
     scope = "login"
 
-class RegisterThrottle(UserRateThrottle):
+class RegisterThrottle(AnonRateThrottle):
     scope = "register"

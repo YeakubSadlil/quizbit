@@ -4,7 +4,7 @@ from django.urls import path, include
 from quiz.views import HomeView
 
 urlpatterns = [
-    path('', HomeView.as_view(), name='Home'),
+    path('', HomeView.as_view(), name='home'),
     path('admin/', admin.site.urls),
     path('api/', include('quiz.urls')),
     path('', include('django_prometheus.urls')),

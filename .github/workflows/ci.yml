@@ -1,0 +1,68 @@
+name: Django App CI
+
+on:
+  push:
+    branches:
+      - phase-5_scalibility_optimization
+  pull_request:
+    branches:
+      - version_2
+
+jobs:
+  setup-and-install:
+    runs-on: ubuntu-latest
+
+    env:
+      DB_NAME: quizbit
+      DB_USER: postgres
+      DB_PASSWORD: test_pass
+      DB_HOST: localhost
+      REDIS_HOST: localhost
+      DJANGO_Scrt_KEY: test-secret-key
+
+    services:
+      postgres:
+        image: postgres:17.4
+        env:
+          POSTGRES_USER: ${{env.DB_USER}}
+          POSTGRES_PASSWORD: ${{env.DB_PASSWORD}}
+          POSTGRES_DB: ${{env.DB_NAME}}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready 
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:alpine
+        ports:
+          - "6379:6379"
+        options: >-
+          --health-cmd "redis-cli ping" 
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup-python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.8'
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Apply migration
+        run: |
+          python manage.py makemigrations --noinput
+          python manage.py migrate
+
+      - name: Rune tests
+        run: |
+          pytest

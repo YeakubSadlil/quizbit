@@ -1,7 +1,9 @@
-from pathlib import Path
-from datetime import timedelta
 import os
+from datetime import timedelta
+from pathlib import Path
+
 from dotenv import load_dotenv
+
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -10,8 +12,15 @@ SECRET_KEY = os.getenv("DJANGO_Scrt_KEY")
 
 DEBUG = False
 
-ALLOWED_HOSTS = ["*"]   
-
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "node1",
+    "node2",
+    "django_web1",
+    "django_web2",
+    "nginx_lb",
+]
 
 # Application definition
 
@@ -65,7 +74,7 @@ AUTH_USER_MODEL = 'quiz.Users'
 # Custom Database - Postgres
 
 DATABASES = {
-"default": {
+    "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": os.getenv("DB_NAME"),
         "USER": os.getenv("DB_USER"),
@@ -88,10 +97,10 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle'
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '5/day',
-        'user': '1000/day',
-        'login': '80/day',
-        'register': '20/day',
+        'anon': '1000/day',
+        'user': '5000/day',
+        'login': '500/day',
+        'register': '50/day',
     }
 }
 
@@ -113,7 +122,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -124,7 +132,6 @@ TIME_ZONE = 'Asia/Dhaka'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
@@ -153,4 +160,58 @@ CACHES = {
         "BACKEND": "django_prometheus.cache.backends.redis.RedisCache",
         "LOCATION": f"redis://{os.getenv('REDIS_HOST', 'localhost')}:{os.getenv('REDIS_PORT', '6379')}",
     }
+}
+
+# Python Logger
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "clean": {
+            "()": "pythonjsonlogger.json.JsonFormatter",
+            "format": "{levelname} [{asctime}] {module}:{lineno} {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
+        },
+    },
+
+    "handlers": {
+        "console1": {
+            "class": "logging.StreamHandler",
+            "level": "DEBUG",
+            "formatter": "clean",
+        },
+        "console2": {
+            "class": "logging.StreamHandler",
+            "level": "DEBUG",
+            "formatter": "simple",
+        },
+        "file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "level": "DEBUG",
+            "formatter": "clean",
+            "filename": os.path.join(BASE_DIR, "logs", "app.log"),
+            "maxBytes": 1024 * 1024 * 10,  # 10 MB
+            "backupCount": 5,
+        },
+    },
+
+    "loggers": {
+        "django": {
+            "handlers": ["console2"],
+            "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
+            "propagate": True,
+        },
+        "quiz": {
+            "handlers": ["console1", "file"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+    },
 }

@@ -1,4 +1,8 @@
+import logging
+
 from django.core.cache import cache
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from rest_framework import status, permissions
 from rest_framework.exceptions import ValidationError
 from rest_framework.pagination import PageNumberPagination
@@ -11,15 +15,18 @@ from .emails import *
 from .serializers import UserRegistrationSerializer, UserLoginSerializer, QuizSessionSerializer
 from .throttles import LoginThrottle, RegisterThrottle
 
+logger = logging.getLogger(__name__)
 
+
+@method_decorator(cache_page(60 * 5), name='dispatch')
 class HomeView(APIView):
     """
-    Home view for the root URL
+    Return API endpoints
     """
 
     def get(self, request):
         return Response({
-            "msg": "This is QuizBit, a MCQ Simulation API!",
+            "msg": "QuizBit, a MCQ Simulation API!",
             "endpoints": {
                 "register": "/api/register/",
                 "verify otp": "/api/verify-otp/",
@@ -34,6 +41,11 @@ class HomeView(APIView):
 
 
 def get_tokens(user):
+    """
+    Generate JWT tokens for user
+    param: user:
+    returns: Dict of access tokens and refresh tokens
+    """
     refresh_token = RefreshToken.for_user(user)
     return {
         'refresh': str(refresh_token),
@@ -42,30 +54,83 @@ def get_tokens(user):
 
 
 class RegistrationView(APIView):
+    """
+    User registration by OTP verification
+    """
     throttle_classes = [RegisterThrottle]
 
     def post(self, request):
-        serializer = UserRegistrationSerializer(data=request.data)
+        logger.info("Registration Started for ip: %s", request.META.get("REMOTE_ADDR", "unknown"))
 
-        if serializer.is_valid():
-            email = serializer.validated_data['email']
-            existing_user = models.Users.objects.filter(email=email).first()
+        email = request.data.get("email")
+        if not email:
+            return Response(
+                {"error": {"email": ["This field is required."]}}, status=status.HTTP_400_BAD_REQUEST
+            )
 
-            if existing_user and not existing_user.is_active:
+        try:
+            existing_user = models.Users.objects.only("is_active", "is_verified").filter(email=email).first()
+        except ValidationError as e:
+            logger.error("Database error while checking existing user %s", str(e))
+            return Response({
+                "error": f"Database error while checking existing user: '{email}'"
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        if existing_user:
+            return self._handle_existing_user(existing_user, email)
+
+        return self._register_new_user(request.data)
+
+    def _handle_existing_user(self, existing_user, email):
+        # user is deactivated
+        if not existing_user.is_active and existing_user.is_verified:
+            logger.warning("Deactivated user '%s' attempted registration", email)
+            return Response({
+                "error": "User is deactivated. Please contact the administrator"
+            }, status=status.HTTP_403_FORBIDDEN)
+
+        # user exists but not verified yet
+        if not existing_user.is_active and not existing_user.is_verified:
+            logger.info("User '%s' is already exist but not verified. Resending OTP" % email)
+            try:
                 send_otp_via_email(email)
-
                 return Response({
-                    'msg': 'The user is already registered but not verified. A new OTP has been sent to your mail'
+                    "message": "The user is already registered but not verified. A new OTP has been sent to your mail"
                 }, status=status.HTTP_200_OK)
+            except Exception as e:
+                logger.error("Failed to send OTP: %s" % e)
+                return Response({
+                    "error": "Failed to send OTP. Please try again later"
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+        logger.info("Registered user '%s' attempted re-registration", email)
+        return Response({
+            "error": "User already exist and verified. Please login"
+        }, status=status.HTTP_409_CONFLICT)
+
+    def _register_new_user(self, data):
+        serializer = UserRegistrationSerializer(data=data)
+
+        if not serializer.is_valid():
+            logger.error("Registration validation failed: %s" % serializer.errors)
+            return Response({
+                "error": serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
             serializer.save()
-            send_otp_via_email(serializer.data['email'])
+            send_otp_via_email(serializer.data["email"])
+            logger.info("OTP sent for user: %s successfully" % serializer.data["email"])
 
             return Response({
-                'msg': 'An OTP has been sent to your email. Please check your inbox or spam folder.'
-            }, status=status.HTTP_200_OK)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                "message": "An OTP has been sent to your email. Please check your inbox or spam folder.",
+                "email": serializer.data["email"]
+            }, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            logger.error("Registration failed: %s" % e)
+            return Response({
+                "error": str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class VerifyOTPView(APIView):

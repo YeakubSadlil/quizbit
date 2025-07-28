@@ -1,0 +1,3 @@
+- **App and Redis performance are being monitored by Prometheus and Grafana.**
+- **Configuration files for Prometheus and Grafana stored here**
+- **Grafana will be automatically opened at [http://localhost:3000](http://localhost:3000) if you use Docker installation**

@@ -9,3 +9,7 @@ python-dotenv==1.0.1
 Faker==35.2.2
 django-redis==5.4.0
 django-prometheus
+python-json-logger
+pytest-django
+pytest
+gunicorn
