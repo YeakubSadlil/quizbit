@@ -4,13 +4,18 @@
 [![Docker](https://img.shields.io/badge/Docker-blue?logo=docker&logoColor=white)](https://www.docker.com/)
 [![Redis](https://img.shields.io/badge/Redis-red?logo=redis&logoColor=white)](https://redis.io/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-blue?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Nginx](https://img.shields.io/badge/nginx-green?logo=nginx&logoColor=white)](https://nginx.org/)
+[![CI/CD](https://img.shields.io/badge/CI/CD-GitHub%20Actions-blue?logo=github-actions&logoColor=white)](https://github.com/features/actions)
+[![CI/CD](https://img.shields.io/badge/Unittest-Pytest-brightgreen?logo=pytest&logoColor=yellow)](https://docs.pytest.org/en/stable/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # 📝 Quizbit MCQ API
 
 > A scalable and secure Multiple Choice Question (MCQ) simulation api built using **Django REST**.<br>
 > Users can register via otp, login, take timed quizzes and view their submission history.<br>
-> The entire system is containerized via **Docker**, **Redis** based caching, **Postgresql** as database, monitored via **Prometheus + Grafana.**
+>
+> The entire system is containerized via **Docker**, **Redis** based caching, **Postgresql** as database,<br>
+> monitored via **Prometheus + Grafana,** served through **Nginx** and **CI** with Github Action.
 
 ## 📑 Table of Contents
 
@@ -24,6 +29,8 @@
 - [📈 Database Models](#-database-models)
 - [🔄 Entity Relationship Diagram](#-entity-relationship-diagram)
 - [📂 Directory Structure](#-directory-structure)
+- [🚀 CI/CD Pipeline](#-cicd-pipeline)
+- [📝 Logging](#-logging)
 - [💬 Feedback](#-support)
 
 [//]: # "- [🌱 Populate Database](#populate-database)"
@@ -73,6 +80,22 @@
 🐳. **Containerization**
 
 - Dockerized the full project for easy deployment
+- **Horizontal Scaling** capability through multiple containers
+
+🚀. **Continuous Integration (CI)**
+
+- Automated testing with GitHub Actions
+- Postgresql and Redis service containers for testing
+- Automated unit test execution
+
+📝. **Logging**
+
+- Structured JSON logging with Python Logger
+- Separate log levels and error monitoring
+
+👍. **Unit Test**
+
+- Implemented unit test using Pytest to test all corner cases
 
 [//]: # "## Prerequisites"
 [//]: # "- Python 3.8"
@@ -108,14 +131,18 @@ This command build the images and starts all services defined in docker-compose.
 
 ### After building image it will start the list of services below:
 
-| Service            | Description                                               | Port Mapping<br/>..........................<br/>Host : Container | Access URL / Notes                                                      |
-| ------------------ | --------------------------------------------------------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| **Django Web App** | Backend API built with Django REST Framework              | `8081:8080`                                                      | http://localhost:8081                                                   |
-| **Postgresql DB**  | Relational database                                       | `5434:5432`                                                      | Host: `db` (for internal use)<br/> Credentials: as per .env file        |
-| **Redis Cache**    | In-memory caching                                         | `6380:6379`                                                      | Host: `redis-service`, Port: `6379`                                     |
-| **Redis Exporter** | Exposes Redis metrics for monitoring                      | `9121:9121`                                                      | Metrics: http://localhost:9121/metrics                                  |
-| **Prometheus**     | Collects metrics from services                            | `9090:9090`                                                      | UI: http://localhost:9090                                               |
-| **Grafana**        | Monitors server performance.<br/>With prebuilt dashboards | `3000:3000`                                                      | Dashboard: http://localhost:3000 <br>Default credentials: `admin/admin` |
+| Service              | Description                                               | Port Mapping<br/>..........................<br/>Host : Container | Access URL / Notes                                                      |
+| -------------------- | --------------------------------------------------------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| **Load Balancer**    | Reverse proxy with Nginx                                  | `8085:80`                                                        | **Main API:** http://localhost:8085                                     |
+| **Django Web App 1** | Backend API instance 1                                    | `8081:8080`                                                      | internal use only                                                       |
+| **Django Web App 2** | Backend API instance 2                                    | `8082:8080`                                                      | internal use only                                                       |
+| **Postgresql DB**    | Relational database                                       | `5434:5432`                                                      | Host: `db` (for internal use)<br/> Credentials: as per .env file        |
+| **Redis Cache**      | In-memory caching                                         | `6380:6379`                                                      | Host: `redis-service`, Port: `6379`                                     |
+| **Redis Exporter**   | Exposes Redis metrics for monitoring                      | `9121:9121`                                                      | Metrics: http://localhost:9121/metrics                                  |
+| **Prometheus**       | Collects metrics from services                            | `9090:9090`                                                      | UI: http://localhost:9090                                               |
+| **Grafana**          | Monitors server performance.<br/>With prebuilt dashboards | `3000:3000`                                                      | Dashboard: http://localhost:3000 <br>Default credentials: `admin/admin` |
+
+🔗 **Primary Access Point:** All API should be accessed through http://localhost:8085 (Load Balancer)
 
 ## 💻 Manual Installation
 
@@ -158,7 +185,7 @@ python manage.py createsuperuser
 
 **With Docker:** If you follow the docker installation, the services are managed by docker compose.
 
-- **Access the API:** The API will be available at [http://localhost:8081](http://localhost:8081)
+- **Access the API:** The API will be available at [http://localhost:8085](http://localhost:8081)
 - **Stop services:**
 
 ```bash
@@ -206,6 +233,27 @@ The application performance is monitored by:
 **N.B:** If you follow`Docker`installation then above services will be automatically available after building images.
 
 ---
+
+## 🚀 CI/CD Pipeline
+
+- Runs on every push and pr to main branch
+- Automatically provisioned Postgres and redis for testing
+- Runs **Pytest** for unit testing
+
+**Workflow File:** `.github/workflows/ci.yml`
+
+## 📝 Logging
+
+- All logs are formatted to JSON for easy parsing
+- Console and file based logging
+- Automatic log file rotation (max 10MB, 5 files)
+- Detailed logging for api requests
+
+**Log files:**
+
+- App log : `logs/app.log`
+- Nginx access logs: `logs/nginx/access.log`
+- Nginx error logs: `logs/nginx/error.log`
 
 ## 📈 Database Models
 
@@ -327,7 +375,19 @@ quizbit/
 │   ├── serializers.py
 │   ├── views.py
 │   ├── models.py
+│   ├── tests/                              # Unit test (Pytest)
 │   └── ...
+│
+├── nginx/                                  # Reverse proxy config
+│   └── nginx.conf
+│
+├── logs/                                   # App log
+│   ├── app.log
+│   └── nginx/access.log
+│
+├── .github/                                # CI/CD configuration
+│   └── workflows/ ci.yml
+│
 ├── monitoring/                             # Prometheus & Grafana scripts
 │   ├── prometheus.yml
 │   └── Grafana_Dashboards/
@@ -336,16 +396,18 @@ quizbit/
 ├── .env
 ├── sample_database                         # Pre-populated database dump
 │   └── sample_db.sql
+│
 ├── postman_collections                     # Postman collections for testing API
 ├── docker-compose.yml
 ├── Dockerfile
+├── pytest.ini                              # Pytest configuration
 ├── manage.py
 └── README.md
 ```
 
 ## 💬 Support
 
-For any suggestions or issues, please [open an issue](https://github.com/YeakubSadlil/quizbit/issues).
+For any suggestions or issues, please [open an issue](https://github.com/YeakubSadlil/quizbit/issues) or send mail to [yakubsadlil@gmail.com](mailto:yakubsadlil@gmail.com)
 
 ## 📄 License
 
