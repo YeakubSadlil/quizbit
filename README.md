@@ -9,7 +9,7 @@
 [![CI/CD](https://img.shields.io/badge/Unittest-Pytest-brightgreen?logo=pytest&logoColor=yellow)](https://docs.pytest.org/en/stable/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-# 📝 Quizbit MCQ API
+# Quizbit MCQ API
 
 > A scalable and secure Multiple Choice Question (MCQ) simulation api built using **Django REST**.<br>
 > Users can register via otp, login, take timed quizzes and view their submission history.<br>
@@ -17,24 +17,24 @@
 > The entire system is containerized via **Docker**, **Redis** based caching, **Postgresql** as database,<br>
 > monitored via **Prometheus + Grafana,** served through **Nginx** and **CI** with Github Action.
 
-## 📑 Table of Contents
+## Table of Contents
 
-- [⭐ Features](#-features)
-- [🐳 Docker Installation](#-docker-installation-recommended)
-- [💻 Manual Installation](#-manual-installation)
-- [🏃 Usage](#-usage)
+- [Features](#features)
+- [Docker Installation](#docker-installation-recommended)
+- [Manual Installation](#manual-installation)
+- [Usage](#usage)
   - [running the project](#running-the-project)
-- [🔗 API Endpoints](#-api-endpoints)
-- [📊 Monitoring](#-monitoring)
-- [📈 Database Models](#-database-models)
-- [🔄 Entity Relationship Diagram](#-entity-relationship-diagram)
-- [📂 Directory Structure](#-directory-structure)
-- [🚀 CI/CD Pipeline](#-cicd-pipeline)
-- [📝 Logging](#-logging)
-- [💬 Feedback](#-support)
+- [API Endpoints](#api-endpoints)
+- [Monitoring](#monitoring)
+- [Database Models](#database-models)
+- [Entity Relationship Diagram](#entity-relationship-diagram)
+- [Directory Structure](#directory-structure)
+- [CI/CD Pipeline](#cicd-pipeline)
+- [Logging](#logging)
+- [Feedback](#support)
 
-[//]: # "- [🌱 Populate Database](#populate-database)"
-[//]: # "- [➡️ Data Flow](#data-flow)"
+[//]: # " [Populate Database](#populate-database)"
+[//]: # " [Data Flow](#data-flow)"
 
 ---
 
@@ -42,58 +42,58 @@
 
 ---
 
-## ⭐ Features
+## Features
 
-✅. **User Authentication**
+**User Authentication**
 
 - User Registration with password confirmation
 - OTP based email verification
 - User Login with email and JWT authentication
 
-✅. **Question Retrieval**
+**Question Retrieval**
 
 - Retrieve a question from the database filtered by difficulty
 - Retrieve a list of paginated questions info with related multiple choice options
 
-✅. **Answer Submission**
+**Answer Submission**
 
 - Submit answers in practice mode
 - Validate the answer and check the result
 
-✅. **Quiz Mode**
+**Quiz Mode**
 
 - Start a timed quiz from the quiz list
 - Real time quiz tracking with expiration, completed status
 - Submit all selected solutions at once
 
-✅. **User Submission History**
+**User Submission History**
 
 - Retrieve a list of user submission history, attempt number, accuracy (score) and time taken
 
-📊. **Performance Monitoring**
+**Performance Monitoring**
 
 - Prometheus metrics collections
 - Real time dashboards in Grafana for
   - Djnago performance
   - Redis usage
 
-🐳. **Containerization**
+**Containerization**
 
 - Dockerized the full project for easy deployment
 - **Horizontal Scaling** capability through multiple containers
 
-🚀. **Continuous Integration (CI)**
+**Continuous Integration (CI)**
 
 - Automated testing with GitHub Actions
 - Postgresql and Redis service containers for testing
 - Automated unit test execution
 
-📝. **Logging**
+**Logging**
 
 - Structured JSON logging with Python Logger
 - Separate log levels and error monitoring
 
-👍. **Unit Test**
+**Unit Test**
 
 - Implemented unit test using Pytest to test all corner cases
 
@@ -103,7 +103,7 @@
 [//]: # "- Django Simple JWT"
 [//]: # "- PostgreSQL (Database)"
 
-## 🐳 Docker Installation (Recommended)
+## Docker Installation (Recommended)
 
 1. **Clone the repository**
 
@@ -142,9 +142,9 @@ This command build the images and starts all services defined in docker-compose.
 | **Prometheus**       | Collects metrics from services                            | `9090:9090`                                                      | UI: http://localhost:9090                                               |
 | **Grafana**          | Monitors server performance.<br/>With prebuilt dashboards | `3000:3000`                                                      | Dashboard: http://localhost:3000 <br>Default credentials: `admin/admin` |
 
-🔗 **Primary Access Point:** All API should be accessed through http://localhost:8085 (Load Balancer)
+**Primary Access Point:** All API should be accessed through http://localhost:8085 (Load Balancer)
 
-## 💻 Manual Installation
+## Manual Installation
 
 1. Clone the repository
 
@@ -179,7 +179,7 @@ python manage.py migrate
 python manage.py createsuperuser
 ```
 
-## 🏃 Usage
+## Usage
 
 ### Running the project
 
@@ -201,7 +201,7 @@ docker compose down
 python manage.py runserver
 ```
 
-## 🔗 API Endpoints
+## API Endpoints
 
 For a comprehensive list and to interact with API import the **postman collections** from the `postman_collections/` directory.
 
@@ -221,7 +221,7 @@ For a comprehensive list and to interact with API import the **postman collectio
 
 **JWT** Authentication is used for protected endpoints
 
-## 📊 Monitoring
+## Monitoring
 
 The application performance is monitored by:
 
@@ -234,7 +234,7 @@ The application performance is monitored by:
 
 ---
 
-## 🚀 CI/CD Pipeline
+## CI/CD Pipeline
 
 - Runs on every push and pr to main branch
 - Automatically provisioned Postgres and redis for testing
@@ -242,7 +242,7 @@ The application performance is monitored by:
 
 **Workflow File:** `.github/workflows/ci.yml`
 
-## 📝 Logging
+## Logging
 
 - All logs are formatted to JSON for easy parsing
 - Console and file based logging
@@ -255,7 +255,7 @@ The application performance is monitored by:
 - Nginx access logs: `logs/nginx/access.log`
 - Nginx error logs: `logs/nginx/error.log`
 
-## 📈 Database Models
+## Database Models
 
 1. **Users:** Custom user model with email as the unique identifier
 2. **Question_Category:** Category of each question like Math,Physics,Chemistry etc.
@@ -266,7 +266,7 @@ The application performance is monitored by:
 7. **QuizSessionQuestion:** Maps QuizSession and Questions
 8. **UserSolutions:** Stores user submission history with answer and time taken
 
-## 🔄 Entity Relationship Diagram
+## Entity Relationship Diagram
 
 ```mermaid
 erDiagram
@@ -366,7 +366,7 @@ erDiagram
 [//]: #
 [//]: # "- Otherwise, import the sample database"
 
-## 📂 Directory Structure
+## Directory Structure
 
 ```
 quizbit/
@@ -405,10 +405,10 @@ quizbit/
 └── README.md
 ```
 
-## 💬 Support
+## Support
 
 For any suggestions or issues, please [open an issue](https://github.com/YeakubSadlil/quizbit/issues) or send mail to [yakubsadlil@gmail.com](mailto:yakubsadlil@gmail.com)
 
-## 📄 License
+## License
 
 The project is licensed under the **MIT License** - see details in [LICENSE](LICENSE).
