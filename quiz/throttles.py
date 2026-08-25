@@ -39,8 +39,13 @@ class BaseTokenBucketThrottle(BaseThrottle):
             bucket["tokens"] -= 1
             cache.set(key,bucket, timeout=3600)
             return True
+        # how long untill 1 token available
+        self._wait = (1-bucket["tokens"]) / self.refill_rate
+
         cache.set(key, bucket, timeout=3600)
         return False
+    def wait(self):
+        return self._wait
 
 class AnonTokenBucketThrottle(BaseTokenBucketThrottle):
     def get_bucket_key(self, request):
