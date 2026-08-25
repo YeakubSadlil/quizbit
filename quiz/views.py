@@ -13,7 +13,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from . import models, serializers
 from .emails import *
 from .serializers import UserRegistrationSerializer, UserLoginSerializer, QuizSessionSerializer
-from .throttles import LoginThrottle, RegisterThrottle
+from .throttles import LoginThrottle, RegisterThrottle, AnonTokenBucketThrottle
 
 logger = logging.getLogger(__name__)
 
@@ -221,6 +221,7 @@ class QuestionListView(APIView):
     """
 
     # permission_classes = [permissions.IsAuthenticated]
+    throttle_classes = [AnonTokenBucketThrottle]
 
     def validate_difficulty(self, diff):
         difficulty_list = {'easy', 'medium', 'hard'}
@@ -268,7 +269,7 @@ class QuestionListView(APIView):
 
             # paginate the response
             paginator = PageNumberPagination()
-            paginator.page_size = 1000
+            paginator.page_size = 100
             paginated_questions = paginator.paginate_queryset(questions, request)
 
             serializer = serializers.QuestionListSerializer(paginated_questions, many=True)
