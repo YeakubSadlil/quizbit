@@ -1,4 +1,3 @@
-from unittest.mock import patch
 import pytest
 from django.core.cache import cache
 from django.urls import reverse
