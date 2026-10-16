@@ -379,7 +379,7 @@ class SubmitAnswerView(APIView):
         if serializer.is_valid():
             # Check user has submitted the answer previously
             question = serializer.validated_data['question']
-            selected_answer = serializer.validated_data['selected_answer']
+            selected_option = serializer.validated_data['selected_option']
 
             if models.UserSolutions.objects.filter(user=request.user, question=question).exists():
                 return Response(
@@ -388,7 +388,7 @@ class SubmitAnswerView(APIView):
                 )
 
             # Check the submitted answer is correct or not
-            is_correct = selected_answer.is_correct
+            is_correct = selected_option.is_correct
             serializer.save(user=request.user, is_correct=is_correct)
 
             return Response(
@@ -436,10 +436,10 @@ class SubmitQuizView(APIView):
 
         for answer in answers:
             question_id = answer.get('question_id')
-            selected_option_id = answer.get('selected_answer_id')
+            selected_option_id = answer.get('selected_option_id')
 
             if not question_id or not selected_option_id:
-                return Response({'error': 'question_id and selected_answer_id are required'})
+                return Response({'error': 'question_id and selected_option_id are required'})
             try:
                 question = models.Questions.objects.get(id=question_id, is_active=True)
                 selected_option = models.Choices.objects.get(id=selected_option_id, question=question)
@@ -462,7 +462,7 @@ class SubmitQuizView(APIView):
             # save the submitted answers
             solution = models.UserSolutions.objects.update_or_create(
                 question=question,
-                selected_answer=selected_option,
+                selected_option=selected_option,
                 is_correct=selected_option.is_correct,
                 attempt_type='quiz',
                 user=request.user,

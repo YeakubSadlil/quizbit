@@ -1,1372 +1,1246 @@
 {
-	"info": {
-		"_postman_id": "74b5fe47-08e2-4853-ad64-7fbf971b357b",
-		"name": "quizbit v2",
-		"description": "This is a Django Web App for Quiz Simulation",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "26936833",
-		"_collection_link": "https://www.postman.com/practice-8502/workspace/quizbit-project/collection/26936833-74b5fe47-08e2-4853-ad64-7fbf971b357b?action=share&source=collection_link&creator=26936833"
-	},
-	"item": [
-		{
-			"name": "Auth",
-			"item": [
-				{
-					"name": "Register",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"email\": \"sh4568@gmail.com\",\n    \"name\": \"Shahed Afridi\",\n    \"password\": \"1234\",\n    \"password2\": \"1234\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://127.0.0.1:8000/api/register/",
-							"protocol": "http",
-							"host": [
-								"127",
-								"0",
-								"0",
-								"1"
-							],
-							"port": "8000",
-							"path": [
-								"api",
-								"register",
-								""
-							]
-						}
-					},
-					"response": [
-						{
-							"name": "register a user",
-							"originalRequest": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"email\": \"seyamsadlil@gmail.com\",\n    \"name\": \"seyam 435\",\n    \"password\": \"1234\",\n    \"password2\": \"1234\"\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://127.0.0.1:8000/api/register/",
-									"protocol": "http",
-									"host": [
-										"127",
-										"0",
-										"0",
-										"1"
-									],
-									"port": "8000",
-									"path": [
-										"api",
-										"register",
-										""
-									]
-								}
-							},
-							"status": "Created",
-							"code": 201,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Date",
-									"value": "Tue, 19 Nov 2024 13:58:22 GMT"
-								},
-								{
-									"key": "Server",
-									"value": "WSGIServer/0.2 CPython/3.8.0"
-								},
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Vary",
-									"value": "Accept"
-								},
-								{
-									"key": "Allow",
-									"value": "POST, OPTIONS"
-								},
-								{
-									"key": "X-Frame-Options",
-									"value": "DENY"
-								},
-								{
-									"key": "Content-Length",
-									"value": "522"
-								},
-								{
-									"key": "X-Content-Type-Options",
-									"value": "nosniff"
-								},
-								{
-									"key": "Referrer-Policy",
-									"value": "same-origin"
-								},
-								{
-									"key": "Cross-Origin-Opener-Policy",
-									"value": "same-origin"
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"token\": {\n        \"refresh\": \"{{vault:json-web-token}}\",\n        \"access\": \"{{vault:json-web-token}}\"\n    },\n    \"msg\": \"Registration success\"\n}"
-						}
-					]
-				},
-				{
-					"name": "Login",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// pm.environment.set(\"access_token\", pm.response.json().token.access);",
-									"",
-									"let response = pm.response.json();",
-									"if (response.token && response.token.access) {",
-									"    pm.environment.set(\"access_token\", response.token.access);",
-									"    pm.environment.set(\"refresh_token\", response.token.refresh);",
-									"    console.log(\"Tokens are saved as environment variable\")",
-									"} else {",
-									"    console.log(\"Token not found in response\");",
-									"}"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"email\":\"seyamsadlil@gmail.com\",\n    \"password\":\"1234\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base-url}}/api/login/",
-							"host": [
-								"{{base-url}}"
-							],
-							"path": [
-								"api",
-								"login",
-								""
-							]
-						}
-					},
-					"response": [
-						{
-							"name": "vaild authetication",
-							"originalRequest": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"email\":\"seyamsadlil@gmail.com\",\n    \"password\":\"1234\"\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{base-url}}/api/login/",
-									"host": [
-										"{{base-url}}"
-									],
-									"path": [
-										"api",
-										"login",
-										""
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Date",
-									"value": "Wed, 01 Jan 2025 14:17:27 GMT"
-								},
-								{
-									"key": "Server",
-									"value": "WSGIServer/0.2 CPython/3.8.0"
-								},
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Vary",
-									"value": "Accept"
-								},
-								{
-									"key": "Allow",
-									"value": "POST, OPTIONS"
-								},
-								{
-									"key": "X-Frame-Options",
-									"value": "DENY"
-								},
-								{
-									"key": "Content-Length",
-									"value": "550"
-								},
-								{
-									"key": "X-Content-Type-Options",
-									"value": "nosniff"
-								},
-								{
-									"key": "Referrer-Policy",
-									"value": "same-origin"
-								},
-								{
-									"key": "Cross-Origin-Opener-Policy",
-									"value": "same-origin"
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"token\": {\n        \"refresh\": \"{{vault:json-web-token}}\",\n        \"access\": \"{{vault:json-web-token}}\"\n    },\n    \"msg\": \"Login Success\",\n    \"email\": \"seyamsadlil@gmail.com\"\n}"
-						}
-					]
-				},
-				{
-					"name": "Send OTP",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"email\": \"seyamsadlil@gmail.com\",\n    \"otp\": \"7123\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base-url}}/api/verifiy-otp/",
-							"host": [
-								"{{base-url}}"
-							],
-							"path": [
-								"api",
-								"verifiy-otp",
-								""
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Quiz Exam",
-			"item": [
-				{
-					"name": "Start Quiz",
-					"request": {
-						"method": "GET",
-						"header": []
-					},
-					"response": [
-						{
-							"name": "start quiz",
-							"originalRequest": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "aut",
-										"value": "",
-										"type": "text"
-									},
-									{
-										"key": "Authorization",
-										"value": "Bearer {{access_token}}",
-										"type": "text"
-									}
-								],
-								"url": {
-									"raw": "{{base-url}}/api/quiz/1",
-									"host": [
-										"{{base-url}}"
-									],
-									"path": [
-										"api",
-										"quiz",
-										"1"
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Date",
-									"value": "Thu, 06 Feb 2025 19:06:31 GMT"
-								},
-								{
-									"key": "Server",
-									"value": "WSGIServer/0.2 CPython/3.8.0"
-								},
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Vary",
-									"value": "Accept"
-								},
-								{
-									"key": "Allow",
-									"value": "GET, HEAD, OPTIONS"
-								},
-								{
-									"key": "X-Frame-Options",
-									"value": "DENY"
-								},
-								{
-									"key": "Content-Length",
-									"value": "77"
-								},
-								{
-									"key": "X-Content-Type-Options",
-									"value": "nosniff"
-								},
-								{
-									"key": "Referrer-Policy",
-									"value": "same-origin"
-								},
-								{
-									"key": "Cross-Origin-Opener-Policy",
-									"value": "same-origin"
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"msg\": \"quiz is in progress and started at 2025-02-07 01:03:33.459000+00:00\"\n}"
-						}
-					]
-				},
-				{
-					"name": "Submit Quiz",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\t\"quiz_session_id\": 59,\n    \"answers\":[\n\t\t\t{\"question_id\": 5, \"selected_answer_id\": 18},\n\t\t\t{\"question_id\": 4, \"selected_answer_id\": 15},\n\t\t\t{\"question_id\": 1, \"selected_answer_id\": 1},\n\t\t\t{\"question_id\": 3, \"selected_answer_id\": 9},\n\t\t\t{\"question_id\": 6, \"selected_answer_id\": 22}\n\t\t]\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://127.0.0.1:8000/api/submit-quiz/",
-							"protocol": "http",
-							"host": [
-								"127",
-								"0",
-								"0",
-								"1"
-							],
-							"port": "8000",
-							"path": [
-								"api",
-								"submit-quiz",
-								""
-							]
-						}
-					},
-					"response": [
-						{
-							"name": "Submit Complete Quiz",
-							"originalRequest": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{vault:json-web-token}}",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"question\": 2,\n    \"selected_answer\": 6     \n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://127.0.0.1:8000/api/submit-answer/",
-									"protocol": "http",
-									"host": [
-										"127",
-										"0",
-										"0",
-										"1"
-									],
-									"port": "8000",
-									"path": [
-										"api",
-										"submit-answer",
-										""
-									]
-								}
-							},
-							"status": "Created",
-							"code": 201,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Date",
-									"value": "Tue, 19 Nov 2024 06:40:42 GMT"
-								},
-								{
-									"key": "Server",
-									"value": "WSGIServer/0.2 CPython/3.8.0"
-								},
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Vary",
-									"value": "Accept"
-								},
-								{
-									"key": "Allow",
-									"value": "POST, OPTIONS"
-								},
-								{
-									"key": "X-Frame-Options",
-									"value": "DENY"
-								},
-								{
-									"key": "Content-Length",
-									"value": "60"
-								},
-								{
-									"key": "X-Content-Type-Options",
-									"value": "nosniff"
-								},
-								{
-									"key": "Referrer-Policy",
-									"value": "same-origin"
-								},
-								{
-									"key": "Cross-Origin-Opener-Policy",
-									"value": "same-origin"
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"msg\": \"Solution submitted successfully.\",\n    \"is_correct\": true\n}"
-						},
-						{
-							"name": "Submit Partial Quiz",
-							"originalRequest": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{vault:json-web-token}}",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"question\": 3,\n    \"selected_answer\": 10\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://127.0.0.1:8000/api/submit-answer/",
-									"protocol": "http",
-									"host": [
-										"127",
-										"0",
-										"0",
-										"1"
-									],
-									"port": "8000",
-									"path": [
-										"api",
-										"submit-answer",
-										""
-									]
-								}
-							},
-							"status": "Bad Request",
-							"code": 400,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Date",
-									"value": "Tue, 19 Nov 2024 06:44:55 GMT"
-								},
-								{
-									"key": "Server",
-									"value": "WSGIServer/0.2 CPython/3.8.0"
-								},
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Vary",
-									"value": "Accept"
-								},
-								{
-									"key": "Allow",
-									"value": "POST, OPTIONS"
-								},
-								{
-									"key": "X-Frame-Options",
-									"value": "DENY"
-								},
-								{
-									"key": "Content-Length",
-									"value": "52"
-								},
-								{
-									"key": "X-Content-Type-Options",
-									"value": "nosniff"
-								},
-								{
-									"key": "Referrer-Policy",
-									"value": "same-origin"
-								},
-								{
-									"key": "Cross-Origin-Opener-Policy",
-									"value": "same-origin"
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"error\": \"You have already answered this question.\"\n}"
-						},
-						{
-							"name": "Multiple time answer submission",
-							"originalRequest": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{vault:json-web-token}}",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"question\": 1,\n    \"selected_answer\": 3        \n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://127.0.0.1:8000/api/submit-answer/",
-									"protocol": "http",
-									"host": [
-										"127",
-										"0",
-										"0",
-										"1"
-									],
-									"port": "8000",
-									"path": [
-										"api",
-										"submit-answer",
-										""
-									]
-								}
-							},
-							"status": "Bad Request",
-							"code": 400,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Date",
-									"value": "Tue, 19 Nov 2024 14:25:54 GMT"
-								},
-								{
-									"key": "Server",
-									"value": "WSGIServer/0.2 CPython/3.8.0"
-								},
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Vary",
-									"value": "Accept"
-								},
-								{
-									"key": "Allow",
-									"value": "POST, OPTIONS"
-								},
-								{
-									"key": "X-Frame-Options",
-									"value": "DENY"
-								},
-								{
-									"key": "Content-Length",
-									"value": "52"
-								},
-								{
-									"key": "X-Content-Type-Options",
-									"value": "nosniff"
-								},
-								{
-									"key": "Referrer-Policy",
-									"value": "same-origin"
-								},
-								{
-									"key": "Cross-Origin-Opener-Policy",
-									"value": "same-origin"
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"error\": \"You have already answered this question.\"\n}"
-						}
-					]
-				}
-			]
-		},
-		{
-			"name": "Question Retrieval",
-			"item": [
-				{
-					"name": "Show All Question Lists",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{access_token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base-url}}/api/questionlist/",
-							"host": [
-								"{{base-url}}"
-							],
-							"path": [
-								"api",
-								"questionlist",
-								""
-							]
-						}
-					},
-					"response": [
-						{
-							"name": "Show all question lists",
-							"originalRequest": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{vault:json-web-token}}",
-										"type": "text"
-									}
-								],
-								"url": {
-									"raw": "http://127.0.0.1:8000/api/questionlist/",
-									"protocol": "http",
-									"host": [
-										"127",
-										"0",
-										"0",
-										"1"
-									],
-									"port": "8000",
-									"path": [
-										"api",
-										"questionlist",
-										""
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Date",
-									"value": "Tue, 19 Nov 2024 12:41:02 GMT"
-								},
-								{
-									"key": "Server",
-									"value": "WSGIServer/0.2 CPython/3.8.0"
-								},
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Vary",
-									"value": "Accept"
-								},
-								{
-									"key": "Allow",
-									"value": "GET, HEAD, OPTIONS"
-								},
-								{
-									"key": "X-Frame-Options",
-									"value": "DENY"
-								},
-								{
-									"key": "Content-Length",
-									"value": "633"
-								},
-								{
-									"key": "X-Content-Type-Options",
-									"value": "nosniff"
-								},
-								{
-									"key": "Referrer-Policy",
-									"value": "same-origin"
-								},
-								{
-									"key": "Cross-Origin-Opener-Policy",
-									"value": "same-origin"
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"Total num. of Questions\": 3,\n    \"All questions\": [\n        {\n            \"id\": 2,\n            \"text\": \"What is the symbol for Gold?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"Chemistry\",\n            \"options\": [\n                {\n                    \"id\": 5,\n                    \"solution\": \"Au\"\n                },\n                {\n                    \"id\": 6,\n                    \"solution\": \"Gu\"\n                },\n                {\n                    \"id\": 7,\n                    \"solution\": \"Gd\"\n                },\n                {\n                    \"id\": 8,\n                    \"solution\": \"Gl\"\n                }\n            ]\n        },\n        {\n            \"id\": 3,\n            \"text\": \"What is log(100) = ?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"Math\",\n            \"options\": [\n                {\n                    \"id\": 9,\n                    \"solution\": \"2\"\n                },\n                {\n                    \"id\": 10,\n                    \"solution\": \"4\"\n                },\n                {\n                    \"id\": 11,\n                    \"solution\": \"0\"\n                },\n                {\n                    \"id\": 12,\n                    \"solution\": \"1\"\n                }\n            ]\n        },\n        {\n            \"id\": 1,\n            \"text\": \"What is 1 + 3?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": [\n                {\n                    \"id\": 1,\n                    \"solution\": \"2\"\n                },\n                {\n                    \"id\": 2,\n                    \"solution\": \"4\"\n                },\n                {\n                    \"id\": 3,\n                    \"solution\": \"5\"\n                },\n                {\n                    \"id\": 4,\n                    \"solution\": \"6\"\n                }\n            ]\n        }\n    ]\n}"
-						}
-					]
-				},
-				{
-					"name": "Show a question detail",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{vault:json-web-token}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{localhost}}/api/question-detail/2",
-							"host": [
-								"{{localhost}}"
-							],
-							"path": [
-								"api",
-								"question-detail",
-								"2"
-							]
-						}
-					},
-					"response": [
-						{
-							"name": "single_question_detail_response",
-							"originalRequest": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{vault:json-web-token}}",
-										"type": "text"
-									}
-								],
-								"url": {
-									"raw": "http://127.0.0.1:8000/api/question-detail/2",
-									"protocol": "http",
-									"host": [
-										"127",
-										"0",
-										"0",
-										"1"
-									],
-									"port": "8000",
-									"path": [
-										"api",
-										"question-detail",
-										"2"
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Date",
-									"value": "Tue, 19 Nov 2024 12:21:10 GMT"
-								},
-								{
-									"key": "Server",
-									"value": "WSGIServer/0.2 CPython/3.8.0"
-								},
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Vary",
-									"value": "Accept"
-								},
-								{
-									"key": "Allow",
-									"value": "GET, HEAD, OPTIONS"
-								},
-								{
-									"key": "X-Frame-Options",
-									"value": "DENY"
-								},
-								{
-									"key": "Content-Length",
-									"value": "205"
-								},
-								{
-									"key": "X-Content-Type-Options",
-									"value": "nosniff"
-								},
-								{
-									"key": "Referrer-Policy",
-									"value": "same-origin"
-								},
-								{
-									"key": "Cross-Origin-Opener-Policy",
-									"value": "same-origin"
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"id\": 2,\n    \"text\": \"What is the symbol for Gold?\",\n    \"difficulty\": \"medium\",\n    \"category_name\": \"Physics\",\n    \"choice\": [\n        {\n            \"id\": 5,\n            \"solution\": \"Au\"\n        },\n        {\n            \"id\": 6,\n            \"solution\": \"Gu\"\n        },\n        {\n            \"id\": 7,\n            \"solution\": \"Gd\"\n        },\n        {\n            \"id\": 8,\n            \"solution\": \"Gl\"\n        }\n    ]\n}"
-						},
-						{
-							"name": "test_wrong_submission",
-							"originalRequest": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{vault:json-web-token}}",
-										"type": "text"
-									}
-								],
-								"url": {
-									"raw": "http://127.0.0.1:8000/api/question-detail/4",
-									"protocol": "http",
-									"host": [
-										"127",
-										"0",
-										"0",
-										"1"
-									],
-									"port": "8000",
-									"path": [
-										"api",
-										"question-detail",
-										"4"
-									]
-								}
-							},
-							"status": "Not Found",
-							"code": 404,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Date",
-									"value": "Tue, 19 Nov 2024 12:23:33 GMT"
-								},
-								{
-									"key": "Server",
-									"value": "WSGIServer/0.2 CPython/3.8.0"
-								},
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Vary",
-									"value": "Accept"
-								},
-								{
-									"key": "Allow",
-									"value": "GET, HEAD, OPTIONS"
-								},
-								{
-									"key": "X-Frame-Options",
-									"value": "DENY"
-								},
-								{
-									"key": "Content-Length",
-									"value": "30"
-								},
-								{
-									"key": "X-Content-Type-Options",
-									"value": "nosniff"
-								},
-								{
-									"key": "Referrer-Policy",
-									"value": "same-origin"
-								},
-								{
-									"key": "Cross-Origin-Opener-Policy",
-									"value": "same-origin"
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"error\": \"Question not found\"\n}"
-						}
-					]
-				}
-			]
-		},
-		{
-			"name": "Submit Answer",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer {{access_token}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"question\": 1,\n    \"selected_answer\": 3        \n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://127.0.0.1:8000/api/submit-answer/",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"submit-answer",
-						""
-					]
-				}
-			},
-			"response": [
-				{
-					"name": "Correct answer submission",
-					"originalRequest": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"question\": 2,\n    \"selected_answer\": 6     \n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base-url}}/api/submit-answer/",
-							"host": [
-								"{{base-url}}"
-							],
-							"path": [
-								"api",
-								"submit-answer",
-								""
-							]
-						}
-					},
-					"status": "Created",
-					"code": 201,
-					"_postman_previewlanguage": "json",
-					"header": [
-						{
-							"key": "Date",
-							"value": "Tue, 19 Nov 2024 06:40:42 GMT"
-						},
-						{
-							"key": "Server",
-							"value": "WSGIServer/0.2 CPython/3.8.0"
-						},
-						{
-							"key": "Content-Type",
-							"value": "application/json"
-						},
-						{
-							"key": "Vary",
-							"value": "Accept"
-						},
-						{
-							"key": "Allow",
-							"value": "POST, OPTIONS"
-						},
-						{
-							"key": "X-Frame-Options",
-							"value": "DENY"
-						},
-						{
-							"key": "Content-Length",
-							"value": "60"
-						},
-						{
-							"key": "X-Content-Type-Options",
-							"value": "nosniff"
-						},
-						{
-							"key": "Referrer-Policy",
-							"value": "same-origin"
-						},
-						{
-							"key": "Cross-Origin-Opener-Policy",
-							"value": "same-origin"
-						}
-					],
-					"cookie": [],
-					"body": "{\n    \"msg\": \"Solution submitted successfully.\",\n    \"is_correct\": true\n}"
-				},
-				{
-					"name": "Incorrect answer submission",
-					"originalRequest": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"question\": 3,\n    \"selected_answer\": 10\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base-url}}/api/submit-answer/",
-							"host": [
-								"{{base-url}}"
-							],
-							"path": [
-								"api",
-								"submit-answer",
-								""
-							]
-						}
-					},
-					"status": "Bad Request",
-					"code": 400,
-					"_postman_previewlanguage": "json",
-					"header": [
-						{
-							"key": "Date",
-							"value": "Tue, 19 Nov 2024 06:44:55 GMT"
-						},
-						{
-							"key": "Server",
-							"value": "WSGIServer/0.2 CPython/3.8.0"
-						},
-						{
-							"key": "Content-Type",
-							"value": "application/json"
-						},
-						{
-							"key": "Vary",
-							"value": "Accept"
-						},
-						{
-							"key": "Allow",
-							"value": "POST, OPTIONS"
-						},
-						{
-							"key": "X-Frame-Options",
-							"value": "DENY"
-						},
-						{
-							"key": "Content-Length",
-							"value": "52"
-						},
-						{
-							"key": "X-Content-Type-Options",
-							"value": "nosniff"
-						},
-						{
-							"key": "Referrer-Policy",
-							"value": "same-origin"
-						},
-						{
-							"key": "Cross-Origin-Opener-Policy",
-							"value": "same-origin"
-						}
-					],
-					"cookie": [],
-					"body": "{\n    \"error\": \"You have already answered this question.\"\n}"
-				},
-				{
-					"name": "Multiple time answer submission",
-					"originalRequest": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"question\": 1,\n    \"selected_answer\": 3        \n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base-url}}/api/submit-answer/",
-							"host": [
-								"{{base-url}}"
-							],
-							"path": [
-								"api",
-								"submit-answer",
-								""
-							]
-						}
-					},
-					"status": "Bad Request",
-					"code": 400,
-					"_postman_previewlanguage": "json",
-					"header": [
-						{
-							"key": "Date",
-							"value": "Tue, 19 Nov 2024 14:25:54 GMT"
-						},
-						{
-							"key": "Server",
-							"value": "WSGIServer/0.2 CPython/3.8.0"
-						},
-						{
-							"key": "Content-Type",
-							"value": "application/json"
-						},
-						{
-							"key": "Vary",
-							"value": "Accept"
-						},
-						{
-							"key": "Allow",
-							"value": "POST, OPTIONS"
-						},
-						{
-							"key": "X-Frame-Options",
-							"value": "DENY"
-						},
-						{
-							"key": "Content-Length",
-							"value": "52"
-						},
-						{
-							"key": "X-Content-Type-Options",
-							"value": "nosniff"
-						},
-						{
-							"key": "Referrer-Policy",
-							"value": "same-origin"
-						},
-						{
-							"key": "Cross-Origin-Opener-Policy",
-							"value": "same-origin"
-						}
-					],
-					"cookie": [],
-					"body": "{\n    \"error\": \"You have already answered this question.\"\n}"
-				}
-			]
-		},
-		{
-			"name": "User History",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{base-url}}/api/user_history/",
-					"host": [
-						"{{base-url}}"
-					],
-					"path": [
-						"api",
-						"user_history",
-						""
-					]
-				}
-			},
-			"response": [
-				{
-					"name": "Find a user history",
-					"originalRequest": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{base-url}}/api/user_history/",
-							"host": [
-								"{{base-url}}"
-							],
-							"path": [
-								"api",
-								"user_history",
-								""
-							]
-						}
-					},
-					"status": "OK",
-					"code": 200,
-					"_postman_previewlanguage": "json",
-					"header": [
-						{
-							"key": "Date",
-							"value": "Tue, 19 Nov 2024 13:54:47 GMT"
-						},
-						{
-							"key": "Server",
-							"value": "WSGIServer/0.2 CPython/3.8.0"
-						},
-						{
-							"key": "Content-Type",
-							"value": "application/json"
-						},
-						{
-							"key": "Vary",
-							"value": "Accept"
-						},
-						{
-							"key": "Allow",
-							"value": "GET, HEAD, OPTIONS"
-						},
-						{
-							"key": "X-Frame-Options",
-							"value": "DENY"
-						},
-						{
-							"key": "Content-Length",
-							"value": "310"
-						},
-						{
-							"key": "X-Content-Type-Options",
-							"value": "nosniff"
-						},
-						{
-							"key": "Referrer-Policy",
-							"value": "same-origin"
-						},
-						{
-							"key": "Cross-Origin-Opener-Policy",
-							"value": "same-origin"
-						}
-					],
-					"cookie": [],
-					"body": "{\n    \"Num of questions attempted\": 2,\n    \"no_correct_answers\": 1,\n    \"question data\": [\n        {\n            \"question\": 1,\n            \"question_descr\": \"What is 1 + 3?\",\n            \"is_correct\": true,\n            \"answered_at\": \"2024-11-18T12:44:47.022316Z\"\n        },\n        {\n            \"question\": 2,\n            \"question_descr\": \"What is the symbol for Gold?\",\n            \"is_correct\": false,\n            \"answered_at\": \"2024-11-18T11:52:19.614287Z\"\n        }\n    ]\n}"
-				}
-			]
-		},
-		{
-			"name": "Home",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{base-url}}/",
-					"host": [
-						"{{base-url}}"
-					],
-					"path": [
-						""
-					]
-				}
-			},
-			"response": []
-		}
-	]
+  "info": {
+    "_postman_id": "74b5fe47-08e2-4853-ad64-7fbf971b357b",
+    "name": "quizbit v2",
+    "description": "This is a Django Web App for Quiz Simulation",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "26936833",
+    "_collection_link": "https://go.postman.co/collection/26936833-74b5fe47-08e2-4853-ad64-7fbf971b357b?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"sh4568@gmail.com\",\n    \"name\": \"Shahed Afridi\",\n    \"password\": \"1234\",\n    \"password2\": \"1234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base-url}}/api/register/",
+              "host": [
+                "{{base-url}}"
+              ],
+              "path": [
+                "api",
+                "register",
+                ""
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "register a user",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"seyamsadlil@gmail.com\",\n    \"name\": \"seyam 435\",\n    \"password\": \"1234\",\n    \"password2\": \"1234\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://127.0.0.1:8000/api/register/",
+                  "protocol": "http",
+                  "host": [
+                    "127",
+                    "0",
+                    "0",
+                    "1"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "register",
+                    ""
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Date",
+                  "value": "Tue, 19 Nov 2024 13:58:22 GMT",
+                  "enabled": true
+                },
+                {
+                  "key": "Server",
+                  "value": "WSGIServer/0.2 CPython/3.8.0",
+                  "enabled": true
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "enabled": true
+                },
+                {
+                  "key": "Vary",
+                  "value": "Accept",
+                  "enabled": true
+                },
+                {
+                  "key": "Allow",
+                  "value": "POST, OPTIONS",
+                  "enabled": true
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "DENY",
+                  "enabled": true
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "522",
+                  "enabled": true
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff",
+                  "enabled": true
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "same-origin",
+                  "enabled": true
+                },
+                {
+                  "key": "Cross-Origin-Opener-Policy",
+                  "value": "same-origin",
+                  "enabled": true
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"token\": {\n        \"refresh\": \"{{vault:json-web-token}}\",\n        \"access\": \"{{vault:json-web-token}}\"\n    },\n    \"msg\": \"Registration success\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// pm.environment.set(\"access_token\", pm.response.json().token.access);",
+                  "",
+                  "let response = pm.response.json();",
+                  "if (response.token && response.token.access) {",
+                  "    pm.environment.set(\"access_token\", response.token.access);",
+                  "    pm.environment.set(\"refresh_token\", response.token.refresh);",
+                  "    console.log(\"Tokens are saved as environment variable\")",
+                  "} else {",
+                  "    console.log(\"Token not found in response\");",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\":\"seyamsadlil@gmail.com\",\n    \"password\":\"1234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base-url}}/api/login/",
+              "host": [
+                "{{base-url}}"
+              ],
+              "path": [
+                "api",
+                "login",
+                ""
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "vaild authetication",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\":\"seyamsadlil@gmail.com\",\n    \"password\":\"1234\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base-url}}/api/login/",
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "login",
+                    ""
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Date",
+                  "value": "Wed, 01 Jan 2025 14:17:27 GMT",
+                  "enabled": true
+                },
+                {
+                  "key": "Server",
+                  "value": "WSGIServer/0.2 CPython/3.8.0",
+                  "enabled": true
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "enabled": true
+                },
+                {
+                  "key": "Vary",
+                  "value": "Accept",
+                  "enabled": true
+                },
+                {
+                  "key": "Allow",
+                  "value": "POST, OPTIONS",
+                  "enabled": true
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "DENY",
+                  "enabled": true
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "550",
+                  "enabled": true
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff",
+                  "enabled": true
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "same-origin",
+                  "enabled": true
+                },
+                {
+                  "key": "Cross-Origin-Opener-Policy",
+                  "value": "same-origin",
+                  "enabled": true
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"token\": {\n        \"refresh\": \"{{vault:json-web-token}}\",\n        \"access\": \"{{vault:json-web-token}}\"\n    },\n    \"msg\": \"Login Success\",\n    \"email\": \"seyamsadlil@gmail.com\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Send OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"seyamsadlil@gmail.com\",\n    \"otp\": \"7123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base-url}}/api/verifiy-otp/",
+              "host": [
+                "{{base-url}}"
+              ],
+              "path": [
+                "api",
+                "verifiy-otp",
+                ""
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "verified",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"yeakubsadlil@gmail.com\",\n    \"otp\": \"7978\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base-url}}/api/verify-otp/",
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "verify-otp",
+                    ""
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Date",
+                  "value": "Sat, 14 Jun 2025 05:27:31 GMT"
+                },
+                {
+                  "key": "Server",
+                  "value": "WSGIServer/0.2 CPython/3.8.20"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Accept, Cookie"
+                },
+                {
+                  "key": "Allow",
+                  "value": "POST, OPTIONS"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "DENY"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "31"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Cross-Origin-Opener-Policy",
+                  "value": "same-origin"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"msg\": \"Successfully verified\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Quiz Exam",
+      "item": [
+        {
+          "name": "Start Quiz",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": [
+            {
+              "name": "start quiz",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "aut",
+                    "value": "",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base-url}}/api/quiz/1",
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "quiz",
+                    "1"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Date",
+                  "value": "Thu, 06 Feb 2025 19:06:31 GMT"
+                },
+                {
+                  "key": "Server",
+                  "value": "WSGIServer/0.2 CPython/3.8.0"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Accept"
+                },
+                {
+                  "key": "Allow",
+                  "value": "GET, HEAD, OPTIONS"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "DENY"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "77"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Cross-Origin-Opener-Policy",
+                  "value": "same-origin"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"msg\": \"quiz is in progress and started at 2025-02-07 01:03:33.459000+00:00\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Submit Quiz",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\t\t\"quiz_session_id\": 59,\n    \"answers\":[\n\t\t\t{\"question_id\": 5, \"selected_option_id\": 18},\n\t\t\t{\"question_id\": 4, \"selected_option_id\": 15},\n\t\t\t{\"question_id\": 1, \"selected_option_id\": 1},\n\t\t\t{\"question_id\": 3, \"selected_option_id\": 9},\n\t\t\t{\"question_id\": 6, \"selected_option_id\": 22}\n\t\t]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/submit-quiz/",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "submit-quiz",
+                ""
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Submit Complete Quiz",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{vault:json-web-token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"question\": 2,\n    \"selected_option\": 6     \n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://127.0.0.1:8000/api/submit-answer/",
+                  "protocol": "http",
+                  "host": [
+                    "127",
+                    "0",
+                    "0",
+                    "1"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "submit-answer",
+                    ""
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Date",
+                  "value": "Tue, 19 Nov 2024 06:40:42 GMT"
+                },
+                {
+                  "key": "Server",
+                  "value": "WSGIServer/0.2 CPython/3.8.0"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Accept"
+                },
+                {
+                  "key": "Allow",
+                  "value": "POST, OPTIONS"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "DENY"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "60"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Cross-Origin-Opener-Policy",
+                  "value": "same-origin"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"msg\": \"Solution submitted successfully.\",\n    \"is_correct\": true\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Question Retrieval",
+      "item": [
+        {
+          "name": "Retrieve all question list",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base-url}}/api/question-list/",
+              "host": [
+                "{{base-url}}"
+              ],
+              "path": [
+                "api",
+                "question-list",
+                ""
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Successfull request",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base-url}}/api/question-list/",
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "question-list",
+                    ""
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Date",
+                  "value": "Wed, 30 Apr 2025 15:56:46 GMT"
+                },
+                {
+                  "key": "Server",
+                  "value": "WSGIServer/0.2 CPython/3.8.0"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Accept"
+                },
+                {
+                  "key": "Allow",
+                  "value": "GET, HEAD, OPTIONS"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "DENY"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "4189"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Cross-Origin-Opener-Policy",
+                  "value": "same-origin"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"Total num. of Questions\": 18,\n    \"All questions\": [\n        {\n            \"id\": 2,\n            \"text\": \"What is the symbol for Gold?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"Chemistry\",\n            \"options\": [\n                {\n                    \"id\": 5,\n                    \"option\": \"Au\"\n                },\n                {\n                    \"id\": 6,\n                    \"option\": \"Gu\"\n                },\n                {\n                    \"id\": 7,\n                    \"option\": \"Gd\"\n                },\n                {\n                    \"id\": 8,\n                    \"option\": \"Gl\"\n                }\n            ]\n        },\n        {\n            \"id\": 3,\n            \"text\": \"What is log(100) = ?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"Math\",\n            \"options\": [\n                {\n                    \"id\": 9,\n                    \"option\": \"2\"\n                },\n                {\n                    \"id\": 10,\n                    \"option\": \"4\"\n                },\n                {\n                    \"id\": 11,\n                    \"option\": \"0\"\n                },\n                {\n                    \"id\": 12,\n                    \"option\": \"1\"\n                }\n            ]\n        },\n        {\n            \"id\": 1,\n            \"text\": \"What is 1 + 3 = ?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": [\n                {\n                    \"id\": 1,\n                    \"option\": \"2\"\n                },\n                {\n                    \"id\": 2,\n                    \"option\": \"4\"\n                },\n                {\n                    \"id\": 3,\n                    \"option\": \"5\"\n                },\n                {\n                    \"id\": 4,\n                    \"option\": \"6\"\n                }\n            ]\n        },\n        {\n            \"id\": 4,\n            \"text\": \"What is the capital of Japan?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": [\n                {\n                    \"id\": 15,\n                    \"option\": \"Beijing\"\n                },\n                {\n                    \"id\": 13,\n                    \"option\": \"Tokyo\"\n                },\n                {\n                    \"id\": 14,\n                    \"option\": \"Seoul\"\n                },\n                {\n                    \"id\": 16,\n                    \"option\": \"Bangkok\"\n                }\n            ]\n        },\n        {\n            \"id\": 5,\n            \"text\": \"Which is the smallest country in the world?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"Math\",\n            \"options\": [\n                {\n                    \"id\": 18,\n                    \"option\": \"Monaco\"\n                },\n                {\n                    \"id\": 19,\n                    \"option\": \"Malta\"\n                },\n                {\n                    \"id\": 20,\n                    \"option\": \"Liechtenstein\"\n                },\n                {\n                    \"id\": 17,\n                    \"option\": \"Vatican City\"\n                }\n            ]\n        },\n        {\n            \"id\": 6,\n            \"text\": \"How many bones are \\tthere in the human body?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"Math\",\n            \"options\": [\n                {\n                    \"id\": 21,\n                    \"option\": \"206\"\n                },\n                {\n                    \"id\": 23,\n                    \"option\": \"180\"\n                },\n                {\n                    \"id\": 24,\n                    \"option\": \"250\"\n                },\n                {\n                    \"id\": 22,\n                    \"option\": \"210\"\n                }\n            ]\n        },\n        {\n            \"id\": 7,\n            \"text\": \"What is the chemical formula of glucose?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"GS\",\n            \"options\": [\n                {\n                    \"id\": 25,\n                    \"option\": \"C6H12O6\"\n                },\n                {\n                    \"id\": 27,\n                    \"option\": \"CO2\"\n                },\n                {\n                    \"id\": 28,\n                    \"option\": \"NaCl\"\n                },\n                {\n                    \"id\": 26,\n                    \"option\": \"H2O\"\n                }\n            ]\n        },\n        {\n            \"id\": 8,\n            \"text\": \"Who discovered the electron?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"GS\",\n            \"options\": [\n                {\n                    \"id\": 30,\n                    \"option\": \"Rutherford\"\n                },\n                {\n                    \"id\": 29,\n                    \"option\": \"J.J. Thomson\"\n                },\n                {\n                    \"id\": 31,\n                    \"option\": \"Bohr\"\n                },\n                {\n                    \"id\": 32,\n                    \"option\": \"Einstein\"\n                }\n            ]\n        },\n        {\n            \"id\": 9,\n            \"text\": \"What is the powerhouse of the cell?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"GS\",\n            \"options\": [\n                {\n                    \"id\": 33,\n                    \"option\": \"Mitochondria\"\n                },\n                {\n                    \"id\": 35,\n                    \"option\": \"Ribosome\"\n                },\n                {\n                    \"id\": 36,\n                    \"option\": \"Lysosome\"\n                },\n                {\n                    \"id\": 34,\n                    \"option\": \"Nucleus\"\n                }\n            ]\n        },\n        {\n            \"id\": 10,\n            \"text\": \"What does CPU stand for?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Chemistry\",\n            \"options\": [\n                {\n                    \"id\": 37,\n                    \"option\": \"Central Processing Unit\"\n                },\n                {\n                    \"id\": 39,\n                    \"option\": \"Compute Power Unit\"\n                },\n                {\n                    \"id\": 38,\n                    \"option\": \"Control Process Unit\"\n                },\n                {\n                    \"id\": 40,\n                    \"option\": \"Central Power Unit\"\n                }\n            ]\n        },\n        {\n            \"id\": 11,\n            \"text\": \"Who is known as the father of the computer?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"Chemistry\",\n            \"options\": [\n                {\n                    \"id\": 44,\n                    \"option\": \"Tim Berners-Lee\"\n                },\n                {\n                    \"id\": 42,\n                    \"option\": \"Alan Turing\"\n                },\n                {\n                    \"id\": 41,\n                    \"option\": \"Charles Babbage\"\n                },\n                {\n                    \"id\": 43,\n                    \"option\": \"Bill Gates\"\n                }\n            ]\n        },\n        {\n            \"id\": 12,\n            \"text\": \"What is the time complexity of binary search?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"Chemistry\",\n            \"options\": [\n                {\n                    \"id\": 47,\n                    \"option\": \"O(n^2)\"\n                },\n                {\n                    \"id\": 46,\n                    \"option\": \"O(n)\"\n                },\n                {\n                    \"id\": 45,\n                    \"option\": \"O(log n)\"\n                },\n                {\n                    \"id\": 48,\n                    \"option\": \"O(1)\"\n                }\n            ]\n        },\n        {\n            \"id\": 13,\n            \"text\": \"Who was the first Emperor of Rome?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"General Knowledge\",\n            \"options\": [\n                {\n                    \"id\": 49,\n                    \"option\": \"Augustus\"\n                },\n                {\n                    \"id\": 51,\n                    \"option\": \"Nero\"\n                },\n                {\n                    \"id\": 50,\n                    \"option\": \"Julius Caesar\"\n                },\n                {\n                    \"id\": 52,\n                    \"option\": \"Marcus Aurelius\"\n                }\n            ]\n        },\n        {\n            \"id\": 14,\n            \"text\": \"When did the French Revolution start?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"General Knowledge\",\n            \"options\": [\n                {\n                    \"id\": 53,\n                    \"option\": \"1789\"\n                },\n                {\n                    \"id\": 56,\n                    \"option\": \"1815\"\n                },\n                {\n                    \"id\": 54,\n                    \"option\": \"1776\"\n                },\n                {\n                    \"id\": 55,\n                    \"option\": \"1804\"\n                }\n            ]\n        },\n        {\n            \"id\": 15,\n            \"text\": \"Which treaty ended World War I?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"General Knowledge\",\n            \"options\": [\n                {\n                    \"id\": 59,\n                    \"option\": \"Potsdam Agreement\"\n                },\n                {\n                    \"id\": 60,\n                    \"option\": \"Treaty of Tordesillas\"\n                },\n                {\n                    \"id\": 58,\n                    \"option\": \"Treaty of Paris\"\n                },\n                {\n                    \"id\": 57,\n                    \"option\": \"Treaty of Versailles\"\n                }\n            ]\n        },\n        {\n            \"id\": 17,\n            \"text\": \"Which country hosted the 2016 Summer Olympics?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"Sports\",\n            \"options\": [\n                {\n                    \"id\": 68,\n                    \"option\": \"Rio de Janeiro\"\n                },\n                {\n                    \"id\": 67,\n                    \"option\": \"China\"\n                },\n                {\n                    \"id\": 66,\n                    \"option\": \"USA\"\n                },\n                {\n                    \"id\": 65,\n                    \"option\": \"Brazil\"\n                }\n            ]\n        },\n        {\n            \"id\": 16,\n            \"text\": \"How many players are in a basketball team?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Sports\",\n            \"options\": [\n                {\n                    \"id\": 61,\n                    \"option\": \"5\"\n                },\n                {\n                    \"id\": 63,\n                    \"option\": \"7\"\n                },\n                {\n                    \"id\": 62,\n                    \"option\": \"6\"\n                },\n                {\n                    \"id\": 64,\n                    \"option\": \"4\"\n                }\n            ]\n        },\n        {\n            \"id\": 18,\n            \"text\": \"Which country has won the most FIFA World Cup titles?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"Sports\",\n            \"options\": [\n                {\n                    \"id\": 69,\n                    \"option\": \"Brazil\"\n                },\n                {\n                    \"id\": 71,\n                    \"option\": \"Italy\"\n                },\n                {\n                    \"id\": 70,\n                    \"option\": \"Germany\"\n                },\n                {\n                    \"id\": 72,\n                    \"option\": \"Argentina\"\n                }\n            ]\n        }\n    ]\n}"
+            },
+            {
+              "name": "diif+catg",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base-url}}/api/question-list?difficulty=easy&category_id=1",
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "question-list"
+                  ],
+                  "query": [
+                    {
+                      "key": "difficulty",
+                      "value": "easy"
+                    },
+                    {
+                      "key": "category_id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Date",
+                  "value": "Tue, 10 Jun 2025 07:30:55 GMT"
+                },
+                {
+                  "key": "Server",
+                  "value": "WSGIServer/0.2 CPython/3.8.20"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Accept, Cookie"
+                },
+                {
+                  "key": "Allow",
+                  "value": "GET, HEAD, OPTIONS"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "DENY"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "5864"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Cross-Origin-Opener-Policy",
+                  "value": "same-origin"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"count\": 41,\n    \"next\": null,\n    \"previous\": null,\n    \"results\": [\n        {\n            \"id\": 1,\n            \"text\": \"What is 1 + 3 = ?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": [\n                {\n                    \"id\": 1,\n                    \"option\": \"2\"\n                },\n                {\n                    \"id\": 2,\n                    \"option\": \"4\"\n                },\n                {\n                    \"id\": 3,\n                    \"option\": \"5\"\n                },\n                {\n                    \"id\": 4,\n                    \"option\": \"6\"\n                }\n            ]\n        },\n        {\n            \"id\": 4,\n            \"text\": \"What is the capital of Japan?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": [\n                {\n                    \"id\": 15,\n                    \"option\": \"Beijing\"\n                },\n                {\n                    \"id\": 13,\n                    \"option\": \"Tokyo\"\n                },\n                {\n                    \"id\": 14,\n                    \"option\": \"Seoul\"\n                },\n                {\n                    \"id\": 16,\n                    \"option\": \"Bangkok\"\n                }\n            ]\n        },\n        {\n            \"id\": 34,\n            \"text\": \"Material system account enough last country personal important apply face different rate cost.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 38,\n            \"text\": \"Citizen dinner nation might machine half should modern but agree.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 55,\n            \"text\": \"Student close central could family admit Mr year.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 92,\n            \"text\": \"Peace color whatever party blood thought politics leg produce.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 94,\n            \"text\": \"Herself general board pick several effect but assume understand.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 108,\n            \"text\": \"Suggest compare trouble including rock each task religious road.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 120,\n            \"text\": \"Hit fine difference mind section.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 153,\n            \"text\": \"Simply fill available Democrat some space travel.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 172,\n            \"text\": \"Accept arrive year my million expert detail successful huge piece right.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 189,\n            \"text\": \"Without church statement factor piece go.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 300,\n            \"text\": \"Subject should interview station economic writer often either worker leg.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 336,\n            \"text\": \"Trial site toward decade himself very.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 358,\n            \"text\": \"Professor money sure scene film church international way.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 439,\n            \"text\": \"Day push sense fact how song.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 444,\n            \"text\": \"Page sound front data share agent community senior over college shoulder.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 470,\n            \"text\": \"Learn arrive several mouth seem your drop market young school.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 486,\n            \"text\": \"Central left protect eight cup trial.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 491,\n            \"text\": \"Social fall least still capital subject hair.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 492,\n            \"text\": \"Defense door bag data seat base rise stop purpose teach.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 503,\n            \"text\": \"Nearly structure son free campaign may woman west discussion physical my daughter class.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 515,\n            \"text\": \"Health television bank speak Democrat us send research information board public into season address writer.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 519,\n            \"text\": \"Inside poor hope month foreign student government way anyone.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 557,\n            \"text\": \"Opportunity before particularly article whole training see human pull society amount range hundred to manage future true office.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 605,\n            \"text\": \"Available certain close paper outside.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 648,\n            \"text\": \"Push memory TV people summer party.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 650,\n            \"text\": \"Brother radio stage seek compare medical though increase administration purpose be common hope difference point.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 676,\n            \"text\": \"Movie reveal price picture crime you purpose.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 712,\n            \"text\": \"Reduce if theory recent organization trade economic different.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 724,\n            \"text\": \"Him personal peace far executive century guess certainly behavior.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 730,\n            \"text\": \"Director set without general mission more under exist space around road guess administration.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 810,\n            \"text\": \"Ever who early model yard campaign sell system.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 827,\n            \"text\": \"Hit room describe.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 881,\n            \"text\": \"Miss fast while project opportunity card common measure there with article central perhaps lead for take owner store.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 949,\n            \"text\": \"Program themselves better yet recognize suggest people cell race build PM down behind explain tree travel million.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 962,\n            \"text\": \"Plan speak role discover amount use toward peace meet represent concern market.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 969,\n            \"text\": \"Then cold can commercial.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 974,\n            \"text\": \"Such question available sort.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 976,\n            \"text\": \"Piece imagine four ever clearly.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 981,\n            \"text\": \"Threat difference who.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        }\n    ]\n}"
+            },
+            {
+              "name": "Retrieve all question list",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "X-Forwarded-For",
+                    "value": "127.0.0.5",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{localhost}}/api/question-list/",
+                  "host": [
+                    "{{localhost}}"
+                  ],
+                  "path": [
+                    "api",
+                    "question-list",
+                    ""
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx/1.31.4"
+                },
+                {
+                  "key": "Date",
+                  "value": "Fri, 28 Aug 2026 14:43:25 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "15835"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Accept"
+                },
+                {
+                  "key": "Allow",
+                  "value": "GET, HEAD, OPTIONS"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "DENY"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "same-origin"
+                },
+                {
+                  "key": "Cross-Origin-Opener-Policy",
+                  "value": "same-origin"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"count\": 1038,\n    \"next\": \"http://127.0.0.1/api/question-list/?page=2\",\n    \"previous\": null,\n    \"results\": [\n        {\n            \"id\": 1,\n            \"text\": \"What is 1 + 3 = ?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": [\n                {\n                    \"id\": 1,\n                    \"option\": \"2\"\n                },\n                {\n                    \"id\": 2,\n                    \"option\": \"4\"\n                },\n                {\n                    \"id\": 3,\n                    \"option\": \"5\"\n                },\n                {\n                    \"id\": 4,\n                    \"option\": \"6\"\n                }\n            ]\n        },\n        {\n            \"id\": 2,\n            \"text\": \"What is the symbol for Gold?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"Chemistry\",\n            \"options\": [\n                {\n                    \"id\": 5,\n                    \"option\": \"Au\"\n                },\n                {\n                    \"id\": 6,\n                    \"option\": \"Gu\"\n                },\n                {\n                    \"id\": 7,\n                    \"option\": \"Gd\"\n                },\n                {\n                    \"id\": 8,\n                    \"option\": \"Gl\"\n                }\n            ]\n        },\n        {\n            \"id\": 3,\n            \"text\": \"What is log(100) = ?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"Math\",\n            \"options\": [\n                {\n                    \"id\": 9,\n                    \"option\": \"2\"\n                },\n                {\n                    \"id\": 10,\n                    \"option\": \"4\"\n                },\n                {\n                    \"id\": 11,\n                    \"option\": \"0\"\n                },\n                {\n                    \"id\": 12,\n                    \"option\": \"1\"\n                }\n            ]\n        },\n        {\n            \"id\": 4,\n            \"text\": \"What is the capital of Japan?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": [\n                {\n                    \"id\": 15,\n                    \"option\": \"Beijing\"\n                },\n                {\n                    \"id\": 13,\n                    \"option\": \"Tokyo\"\n                },\n                {\n                    \"id\": 14,\n                    \"option\": \"Seoul\"\n                },\n                {\n                    \"id\": 16,\n                    \"option\": \"Bangkok\"\n                }\n            ]\n        },\n        {\n            \"id\": 5,\n            \"text\": \"Which is the smallest country in the world?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"Math\",\n            \"options\": [\n                {\n                    \"id\": 18,\n                    \"option\": \"Monaco\"\n                },\n                {\n                    \"id\": 19,\n                    \"option\": \"Malta\"\n                },\n                {\n                    \"id\": 20,\n                    \"option\": \"Liechtenstein\"\n                },\n                {\n                    \"id\": 17,\n                    \"option\": \"Vatican City\"\n                }\n            ]\n        },\n        {\n            \"id\": 6,\n            \"text\": \"How many bones are \\tthere in the human body?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"Math\",\n            \"options\": [\n                {\n                    \"id\": 21,\n                    \"option\": \"206\"\n                },\n                {\n                    \"id\": 23,\n                    \"option\": \"180\"\n                },\n                {\n                    \"id\": 24,\n                    \"option\": \"250\"\n                },\n                {\n                    \"id\": 22,\n                    \"option\": \"210\"\n                }\n            ]\n        },\n        {\n            \"id\": 7,\n            \"text\": \"What is the chemical formula of glucose?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"GS\",\n            \"options\": [\n                {\n                    \"id\": 25,\n                    \"option\": \"C6H12O6\"\n                },\n                {\n                    \"id\": 27,\n                    \"option\": \"CO2\"\n                },\n                {\n                    \"id\": 28,\n                    \"option\": \"NaCl\"\n                },\n                {\n                    \"id\": 26,\n                    \"option\": \"H2O\"\n                }\n            ]\n        },\n        {\n            \"id\": 8,\n            \"text\": \"Who discovered the electron?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"GS\",\n            \"options\": [\n                {\n                    \"id\": 30,\n                    \"option\": \"Rutherford\"\n                },\n                {\n                    \"id\": 29,\n                    \"option\": \"J.J. Thomson\"\n                },\n                {\n                    \"id\": 31,\n                    \"option\": \"Bohr\"\n                },\n                {\n                    \"id\": 32,\n                    \"option\": \"Einstein\"\n                }\n            ]\n        },\n        {\n            \"id\": 9,\n            \"text\": \"What is the powerhouse of the cell?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"GS\",\n            \"options\": [\n                {\n                    \"id\": 33,\n                    \"option\": \"Mitochondria\"\n                },\n                {\n                    \"id\": 35,\n                    \"option\": \"Ribosome\"\n                },\n                {\n                    \"id\": 36,\n                    \"option\": \"Lysosome\"\n                },\n                {\n                    \"id\": 34,\n                    \"option\": \"Nucleus\"\n                }\n            ]\n        },\n        {\n            \"id\": 10,\n            \"text\": \"What does CPU stand for?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Chemistry\",\n            \"options\": [\n                {\n                    \"id\": 37,\n                    \"option\": \"Central Processing Unit\"\n                },\n                {\n                    \"id\": 39,\n                    \"option\": \"Compute Power Unit\"\n                },\n                {\n                    \"id\": 38,\n                    \"option\": \"Control Process Unit\"\n                },\n                {\n                    \"id\": 40,\n                    \"option\": \"Central Power Unit\"\n                }\n            ]\n        },\n        {\n            \"id\": 11,\n            \"text\": \"Who is known as the father of the computer?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"Chemistry\",\n            \"options\": [\n                {\n                    \"id\": 44,\n                    \"option\": \"Tim Berners-Lee\"\n                },\n                {\n                    \"id\": 42,\n                    \"option\": \"Alan Turing\"\n                },\n                {\n                    \"id\": 41,\n                    \"option\": \"Charles Babbage\"\n                },\n                {\n                    \"id\": 43,\n                    \"option\": \"Bill Gates\"\n                }\n            ]\n        },\n        {\n            \"id\": 12,\n            \"text\": \"What is the time complexity of binary search?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"Chemistry\",\n            \"options\": [\n                {\n                    \"id\": 47,\n                    \"option\": \"O(n^2)\"\n                },\n                {\n                    \"id\": 46,\n                    \"option\": \"O(n)\"\n                },\n                {\n                    \"id\": 45,\n                    \"option\": \"O(log n)\"\n                },\n                {\n                    \"id\": 48,\n                    \"option\": \"O(1)\"\n                }\n            ]\n        },\n        {\n            \"id\": 13,\n            \"text\": \"Who was the first Emperor of Rome?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"General Knowledge\",\n            \"options\": [\n                {\n                    \"id\": 49,\n                    \"option\": \"Augustus\"\n                },\n                {\n                    \"id\": 51,\n                    \"option\": \"Nero\"\n                },\n                {\n                    \"id\": 50,\n                    \"option\": \"Julius Caesar\"\n                },\n                {\n                    \"id\": 52,\n                    \"option\": \"Marcus Aurelius\"\n                }\n            ]\n        },\n        {\n            \"id\": 14,\n            \"text\": \"When did the French Revolution start?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"General Knowledge\",\n            \"options\": [\n                {\n                    \"id\": 53,\n                    \"option\": \"1789\"\n                },\n                {\n                    \"id\": 56,\n                    \"option\": \"1815\"\n                },\n                {\n                    \"id\": 54,\n                    \"option\": \"1776\"\n                },\n                {\n                    \"id\": 55,\n                    \"option\": \"1804\"\n                }\n            ]\n        },\n        {\n            \"id\": 15,\n            \"text\": \"Which treaty ended World War I?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"General Knowledge\",\n            \"options\": [\n                {\n                    \"id\": 59,\n                    \"option\": \"Potsdam Agreement\"\n                },\n                {\n                    \"id\": 60,\n                    \"option\": \"Treaty of Tordesillas\"\n                },\n                {\n                    \"id\": 58,\n                    \"option\": \"Treaty of Paris\"\n                },\n                {\n                    \"id\": 57,\n                    \"option\": \"Treaty of Versailles\"\n                }\n            ]\n        },\n        {\n            \"id\": 16,\n            \"text\": \"How many players are in a basketball team?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Sports\",\n            \"options\": [\n                {\n                    \"id\": 61,\n                    \"option\": \"5\"\n                },\n                {\n                    \"id\": 63,\n                    \"option\": \"7\"\n                },\n                {\n                    \"id\": 62,\n                    \"option\": \"6\"\n                },\n                {\n                    \"id\": 64,\n                    \"option\": \"4\"\n                }\n            ]\n        },\n        {\n            \"id\": 17,\n            \"text\": \"Which country hosted the 2016 Summer Olympics?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"Sports\",\n            \"options\": [\n                {\n                    \"id\": 68,\n                    \"option\": \"Rio de Janeiro\"\n                },\n                {\n                    \"id\": 67,\n                    \"option\": \"China\"\n                },\n                {\n                    \"id\": 66,\n                    \"option\": \"USA\"\n                },\n                {\n                    \"id\": 65,\n                    \"option\": \"Brazil\"\n                }\n            ]\n        },\n        {\n            \"id\": 18,\n            \"text\": \"Which country has won the most FIFA World Cup titles?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"Sports\",\n            \"options\": [\n                {\n                    \"id\": 69,\n                    \"option\": \"Brazil\"\n                },\n                {\n                    \"id\": 71,\n                    \"option\": \"Italy\"\n                },\n                {\n                    \"id\": 70,\n                    \"option\": \"Germany\"\n                },\n                {\n                    \"id\": 72,\n                    \"option\": \"Argentina\"\n                }\n            ]\n        },\n        {\n            \"id\": 19,\n            \"text\": \"Special available teach several organization left new response during.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Technology\",\n            \"options\": []\n        },\n        {\n            \"id\": 20,\n            \"text\": \"Dinner consider sign hope care child gun cut institution keep improve others near summer down total.?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"Chemistry\",\n            \"options\": []\n        },\n        {\n            \"id\": 21,\n            \"text\": \"Happy us catch job leader out including.?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"Science\",\n            \"options\": []\n        },\n        {\n            \"id\": 22,\n            \"text\": \"Resource page often outside.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"GS\",\n            \"options\": []\n        },\n        {\n            \"id\": 23,\n            \"text\": \"Forward low individual pretty admit important onto owner meeting together ahead heavy.?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"History\",\n            \"options\": []\n        },\n        {\n            \"id\": 24,\n            \"text\": \"Something director resource group watch director group.?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"Sports\",\n            \"options\": []\n        },\n        {\n            \"id\": 25,\n            \"text\": \"The last threat plan wear man produce.?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"Chemistry\",\n            \"options\": []\n        },\n        {\n            \"id\": 26,\n            \"text\": \"Against page man alone strategy defense some.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"GS\",\n            \"options\": []\n        },\n        {\n            \"id\": 27,\n            \"text\": \"Physical enough practice top.?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"GS\",\n            \"options\": []\n        },\n        {\n            \"id\": 28,\n            \"text\": \"Tax lawyer material item business respond suffer.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Science\",\n            \"options\": []\n        },\n        {\n            \"id\": 29,\n            \"text\": \"Foreign gun window firm practice total list true raise five spend share less deal floor product sell service professor.?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"Chemistry\",\n            \"options\": []\n        },\n        {\n            \"id\": 30,\n            \"text\": \"East rule every face high major own large blood.?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"Chemistry\",\n            \"options\": []\n        },\n        {\n            \"id\": 31,\n            \"text\": \"Life opportunity plant lose nature.?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"Technology\",\n            \"options\": []\n        },\n        {\n            \"id\": 32,\n            \"text\": \"Fish where add let race back next develop.?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"General Knowledge\",\n            \"options\": []\n        },\n        {\n            \"id\": 33,\n            \"text\": \"Part almost action sometimes table address.?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"GS\",\n            \"options\": []\n        },\n        {\n            \"id\": 34,\n            \"text\": \"Material system account enough last country personal important apply face different rate cost.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 35,\n            \"text\": \"Word media whether approach dark official maintain.?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"Science\",\n            \"options\": []\n        },\n        {\n            \"id\": 36,\n            \"text\": \"Deal this why movement least.?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"Physics\",\n            \"options\": []\n        },\n        {\n            \"id\": 37,\n            \"text\": \"Similar him late improve.?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"Sports\",\n            \"options\": []\n        },\n        {\n            \"id\": 38,\n            \"text\": \"Citizen dinner nation might machine half should modern but agree.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 39,\n            \"text\": \"Example training artist page those environmental toward vote real beautiful beautiful down hard Mr election window need painting of.?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 40,\n            \"text\": \"Town join value hope serve point those.?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"Physics\",\n            \"options\": []\n        },\n        {\n            \"id\": 41,\n            \"text\": \"Arrive piece view will including light.?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"Chemistry\",\n            \"options\": []\n        },\n        {\n            \"id\": 42,\n            \"text\": \"Follow never later lose recognize answer practice wind agency say guy worker hard.?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"Chemistry\",\n            \"options\": []\n        },\n        {\n            \"id\": 43,\n            \"text\": \"Level lose necessary almost possible produce young none imagine wait build.?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"General Knowledge\",\n            \"options\": []\n        },\n        {\n            \"id\": 44,\n            \"text\": \"Wonder off southern ever study different exist hair mean citizen daughter.?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"GS\",\n            \"options\": []\n        },\n        {\n            \"id\": 45,\n            \"text\": \"Federal thousand between feeling religious media clearly increase nice tell.?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"GS\",\n            \"options\": []\n        },\n        {\n            \"id\": 46,\n            \"text\": \"Authority relationship management open treatment stay.?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"Physics\",\n            \"options\": []\n        },\n        {\n            \"id\": 47,\n            \"text\": \"Kitchen such coach policy describe the.?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"Chemistry\",\n            \"options\": []\n        },\n        {\n            \"id\": 48,\n            \"text\": \"Very good theory protect maybe art man join let beat.?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"History\",\n            \"options\": []\n        },\n        {\n            \"id\": 49,\n            \"text\": \"One most rate nature position understand fear environment run.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Physics\",\n            \"options\": []\n        },\n        {\n            \"id\": 50,\n            \"text\": \"Trial treat cover entire claim suggest nature than way other effort grow newspaper think.?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"Technology\",\n            \"options\": []\n        },\n        {\n            \"id\": 51,\n            \"text\": \"Democrat stock lead community attention reveal born.?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"Chemistry\",\n            \"options\": []\n        },\n        {\n            \"id\": 52,\n            \"text\": \"Shoulder than direction public suddenly anyone involve professional structure.?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"GS\",\n            \"options\": []\n        },\n        {\n            \"id\": 53,\n            \"text\": \"Since appear college dinner economy window PM TV find.?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"Physics\",\n            \"options\": []\n        },\n        {\n            \"id\": 54,\n            \"text\": \"Audience dinner community understand it enjoy already somebody fact age foreign voice city decade.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Science\",\n            \"options\": []\n        },\n        {\n            \"id\": 55,\n            \"text\": \"Student close central could family admit Mr year.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 56,\n            \"text\": \"Former attorney important structure.?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"Sports\",\n            \"options\": []\n        },\n        {\n            \"id\": 57,\n            \"text\": \"Hour crime purpose like we short stage other which you then.?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"Science\",\n            \"options\": []\n        },\n        {\n            \"id\": 58,\n            \"text\": \"Wall left news number American resource report else Mrs ten.?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"Science\",\n            \"options\": []\n        },\n        {\n            \"id\": 59,\n            \"text\": \"Protect dream development well middle security pay degree which accept send school myself girl where.?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"Physics\",\n            \"options\": []\n        },\n        {\n            \"id\": 60,\n            \"text\": \"Identify base example sit somebody box fact it direction mouth among trip physical.?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"Sports\",\n            \"options\": []\n        },\n        {\n            \"id\": 61,\n            \"text\": \"Sort leg production land think.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Sports\",\n            \"options\": []\n        },\n        {\n            \"id\": 62,\n            \"text\": \"Himself play near rate door for difference fund sure.?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 63,\n            \"text\": \"Including administration claim the product.?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"History\",\n            \"options\": []\n        },\n        {\n            \"id\": 64,\n            \"text\": \"Management keep realize girl Republican choice black action past both.?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"Chemistry\",\n            \"options\": []\n        },\n        {\n            \"id\": 65,\n            \"text\": \"Ball mother rather up story.?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"General Knowledge\",\n            \"options\": []\n        },\n        {\n            \"id\": 66,\n            \"text\": \"Record edge western well poor skin such about.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"History\",\n            \"options\": []\n        },\n        {\n            \"id\": 67,\n            \"text\": \"Choose both both feel.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"General Knowledge\",\n            \"options\": []\n        },\n        {\n            \"id\": 68,\n            \"text\": \"Democratic pretty that organization truth seem anything read evening policy according run final.?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 69,\n            \"text\": \"Change enjoy letter indeed enter daughter suffer still edge mind without.?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"Technology\",\n            \"options\": []\n        },\n        {\n            \"id\": 70,\n            \"text\": \"Eat alone organization debate book drug view energy increase might think focus young laugh party win.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"General Knowledge\",\n            \"options\": []\n        },\n        {\n            \"id\": 71,\n            \"text\": \"Again each could there suffer son present lead question experience including risk particular no agree food.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"General Knowledge\",\n            \"options\": []\n        },\n        {\n            \"id\": 72,\n            \"text\": \"Bill successful record reflect different music stay allow share center.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Science\",\n            \"options\": []\n        },\n        {\n            \"id\": 73,\n            \"text\": \"Real century fact upon activity fly whether while join travel bed door magazine.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Sports\",\n            \"options\": []\n        },\n        {\n            \"id\": 74,\n            \"text\": \"Thus strong actually economy example might whose debate today.?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"General Knowledge\",\n            \"options\": []\n        },\n        {\n            \"id\": 75,\n            \"text\": \"Wear agent those feel course increase indeed behind.?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"History\",\n            \"options\": []\n        },\n        {\n            \"id\": 76,\n            \"text\": \"Person president book local each benefit.?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"Technology\",\n            \"options\": []\n        },\n        {\n            \"id\": 77,\n            \"text\": \"Street yes service yeah billion history themselves.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"GS\",\n            \"options\": []\n        },\n        {\n            \"id\": 78,\n            \"text\": \"Third believe across all only per kind natural.?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"Science\",\n            \"options\": []\n        },\n        {\n            \"id\": 79,\n            \"text\": \"Board personal federal lead accept successful assume popular example never price religious southern.?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"Science\",\n            \"options\": []\n        },\n        {\n            \"id\": 80,\n            \"text\": \"Think consider enter animal defense hold factor try five laugh season factor.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"GS\",\n            \"options\": []\n        },\n        {\n            \"id\": 81,\n            \"text\": \"Decision over current our level PM realize word sometimes ever medical interesting.?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"History\",\n            \"options\": []\n        },\n        {\n            \"id\": 82,\n            \"text\": \"Bar fish forget something move understand low everybody ahead.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Technology\",\n            \"options\": []\n        },\n        {\n            \"id\": 83,\n            \"text\": \"Remember yeah long computer mission strategy lead often but somebody full get rock smile.?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"Science\",\n            \"options\": []\n        },\n        {\n            \"id\": 84,\n            \"text\": \"Back business entire level executive common research court girl trip of whom coach defense lot.?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"Sports\",\n            \"options\": []\n        },\n        {\n            \"id\": 85,\n            \"text\": \"Plan head camera defense.?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 86,\n            \"text\": \"Government do specific your it.?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"Technology\",\n            \"options\": []\n        },\n        {\n            \"id\": 87,\n            \"text\": \"List east American population song although recognize poor election.?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 88,\n            \"text\": \"Everyone color audience life travel partner yard occur land.?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"GS\",\n            \"options\": []\n        },\n        {\n            \"id\": 89,\n            \"text\": \"For movement require media range month.?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"GS\",\n            \"options\": []\n        },\n        {\n            \"id\": 90,\n            \"text\": \"Report lot walk yeah appear themselves report street away least force.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Physics\",\n            \"options\": []\n        },\n        {\n            \"id\": 91,\n            \"text\": \"Successful prove five economy level.?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 92,\n            \"text\": \"Peace color whatever party blood thought politics leg produce.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 93,\n            \"text\": \"Surface teach before impact vote book study half authority.?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"Technology\",\n            \"options\": []\n        },\n        {\n            \"id\": 94,\n            \"text\": \"Herself general board pick several effect but assume understand.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 95,\n            \"text\": \"Body light million television sit well return since drug keep forget.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Physics\",\n            \"options\": []\n        },\n        {\n            \"id\": 96,\n            \"text\": \"Late door father moment body parent not.?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"Science\",\n            \"options\": []\n        },\n        {\n            \"id\": 97,\n            \"text\": \"Tax information detail back look note.?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"History\",\n            \"options\": []\n        },\n        {\n            \"id\": 98,\n            \"text\": \"From teacher maintain political we card beat from today.?\",\n            \"difficulty\": \"medium\",\n            \"category_name\": \"History\",\n            \"options\": []\n        },\n        {\n            \"id\": 99,\n            \"text\": \"Character according pick operation wide out service ok.?\",\n            \"difficulty\": \"hard\",\n            \"category_name\": \"Math\",\n            \"options\": []\n        },\n        {\n            \"id\": 100,\n            \"text\": \"Evening sea range it safe degree can someone.?\",\n            \"difficulty\": \"easy\",\n            \"category_name\": \"Physics\",\n            \"options\": []\n        }\n    ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Show a question detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{vault:json-web-token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{localhost}}/api/question-detail/2",
+              "host": [
+                "{{localhost}}"
+              ],
+              "path": [
+                "api",
+                "question-detail",
+                "2"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "single_question_detail_response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{vault:json-web-token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "http://127.0.0.1:8000/api/question-detail/2",
+                  "protocol": "http",
+                  "host": [
+                    "127",
+                    "0",
+                    "0",
+                    "1"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "question-detail",
+                    "2"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Date",
+                  "value": "Tue, 19 Nov 2024 12:21:10 GMT",
+                  "enabled": true
+                },
+                {
+                  "key": "Server",
+                  "value": "WSGIServer/0.2 CPython/3.8.0",
+                  "enabled": true
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "enabled": true
+                },
+                {
+                  "key": "Vary",
+                  "value": "Accept",
+                  "enabled": true
+                },
+                {
+                  "key": "Allow",
+                  "value": "GET, HEAD, OPTIONS",
+                  "enabled": true
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "DENY",
+                  "enabled": true
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "205",
+                  "enabled": true
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff",
+                  "enabled": true
+                },
+                {
+                  "key": "Referrer-Policy",
+                  "value": "same-origin",
+                  "enabled": true
+                },
+                {
+                  "key": "Cross-Origin-Opener-Policy",
+                  "value": "same-origin",
+                  "enabled": true
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"id\": 2,\n    \"text\": \"What is the symbol for Gold?\",\n    \"difficulty\": \"medium\",\n    \"category_name\": \"Physics\",\n    \"choice\": [\n        {\n            \"id\": 5,\n            \"solution\": \"Au\"\n        },\n        {\n            \"id\": 6,\n            \"solution\": \"Gu\"\n        },\n        {\n            \"id\": 7,\n            \"solution\": \"Gd\"\n        },\n        {\n            \"id\": 8,\n            \"solution\": \"Gl\"\n        }\n    ]\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Submit Answer",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"question\": 1,\n    \"selected_option\": 3        \n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/submit-answer/",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "submit-answer",
+            ""
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Correct answer submission",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"question\": 2,\n    \"selected_option\": 6     \n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{localhost-docker}}/api/submit-answer/",
+              "host": [
+                "{{localhost-docker}}"
+              ],
+              "path": [
+                "api",
+                "submit-answer",
+                ""
+              ]
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Date",
+              "value": "Tue, 19 Nov 2024 06:40:42 GMT"
+            },
+            {
+              "key": "Server",
+              "value": "WSGIServer/0.2 CPython/3.8.0"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Vary",
+              "value": "Accept"
+            },
+            {
+              "key": "Allow",
+              "value": "POST, OPTIONS"
+            },
+            {
+              "key": "X-Frame-Options",
+              "value": "DENY"
+            },
+            {
+              "key": "Content-Length",
+              "value": "60"
+            },
+            {
+              "key": "X-Content-Type-Options",
+              "value": "nosniff"
+            },
+            {
+              "key": "Referrer-Policy",
+              "value": "same-origin"
+            },
+            {
+              "key": "Cross-Origin-Opener-Policy",
+              "value": "same-origin"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"msg\": \"Solution submitted successfully.\",\n    \"is_correct\": true\n}"
+        }
+      ]
+    },
+    {
+      "name": "User History",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base-url}}/api/user_history/",
+          "host": [
+            "{{base-url}}"
+          ],
+          "path": [
+            "api",
+            "user_history",
+            ""
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Find a user history",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base-url}}/api/user_history/",
+              "host": [
+                "{{base-url}}"
+              ],
+              "path": [
+                "api",
+                "user_history",
+                ""
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Date",
+              "value": "Tue, 19 Nov 2024 13:54:47 GMT",
+              "enabled": true
+            },
+            {
+              "key": "Server",
+              "value": "WSGIServer/0.2 CPython/3.8.0",
+              "enabled": true
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "enabled": true
+            },
+            {
+              "key": "Vary",
+              "value": "Accept",
+              "enabled": true
+            },
+            {
+              "key": "Allow",
+              "value": "GET, HEAD, OPTIONS",
+              "enabled": true
+            },
+            {
+              "key": "X-Frame-Options",
+              "value": "DENY",
+              "enabled": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "310",
+              "enabled": true
+            },
+            {
+              "key": "X-Content-Type-Options",
+              "value": "nosniff",
+              "enabled": true
+            },
+            {
+              "key": "Referrer-Policy",
+              "value": "same-origin",
+              "enabled": true
+            },
+            {
+              "key": "Cross-Origin-Opener-Policy",
+              "value": "same-origin",
+              "enabled": true
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"Num of questions attempted\": 2,\n    \"no_correct_answers\": 1,\n    \"question data\": [\n        {\n            \"question\": 1,\n            \"question_descr\": \"What is 1 + 3?\",\n            \"is_correct\": true,\n            \"answered_at\": \"2024-11-18T12:44:47.022316Z\"\n        },\n        {\n            \"question\": 2,\n            \"question_descr\": \"What is the symbol for Gold?\",\n            \"is_correct\": false,\n            \"answered_at\": \"2024-11-18T11:52:19.614287Z\"\n        }\n    ]\n}"
+        }
+      ]
+    },
+    {
+      "name": "Home",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base-url}}/",
+          "host": [
+            "{{base-url}}"
+          ],
+          "path": [
+            ""
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "server-url",
+      "value": ""
+    },
+    {
+      "key": "localhost-docker",
+      "value": ""
+    },
+    {
+      "key": "localhost-debug",
+      "value": ""
+    }
+  ]
 }

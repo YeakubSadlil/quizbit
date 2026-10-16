@@ -83,21 +83,21 @@ class QuestionDetailSerializer(serializers.ModelSerializer):
 class AnswerSubmissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = model_file.UserSolutions
-        fields = ['question', 'selected_answer']
+        fields = ['question', 'selected_option']
 
     def validate(self, attrs):
         question = attrs['question']
-        selected_answer = attrs['selected_answer']
+        selected_option = attrs['selected_option']
 
-        if selected_answer.question.id != question.id:
+        if selected_option.question.id != question.id:
             raise serializers.ValidationError("Your selected answer is not related to this question")
         return attrs
 
 
 class UserHistorySerializer(serializers.ModelSerializer):
     question_descr = serializers.CharField(source='question.text', read_only=True)
-    selected_answer_descr = serializers.CharField(source='selected_answer.text', read_only=True)
+    selected_option_descr = serializers.CharField(source='selected_option.text', read_only=True)
 
     class Meta:
         model = model_file.UserSolutions
-        fields = ['question', 'question_descr', 'selected_answer_descr', 'is_correct', 'answered_at']
+        fields = ['question', 'question_descr', 'selected_option_descr', 'is_correct', 'answered_at']

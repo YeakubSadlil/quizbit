@@ -18,7 +18,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 ALTER TABLE IF EXISTS ONLY public.quiz_usersolutions DROP CONSTRAINT IF EXISTS quiz_usersolutions_user_id_6856aa3f_fk_quiz_users_id;
-ALTER TABLE IF EXISTS ONLY public.quiz_usersolutions DROP CONSTRAINT IF EXISTS quiz_usersolutions_selected_answer_id_f5b9f47c_fk_quiz_choi;
+ALTER TABLE IF EXISTS ONLY public.quiz_usersolutions DROP CONSTRAINT IF EXISTS quiz_usersolutions_selected_option_id_f5b9f47c_fk_quiz_choi;
 ALTER TABLE IF EXISTS ONLY public.quiz_usersolutions DROP CONSTRAINT IF EXISTS quiz_usersolutions_quiz_session_id_06ebf55e_fk_quiz_quiz;
 ALTER TABLE IF EXISTS ONLY public.quiz_usersolutions DROP CONSTRAINT IF EXISTS quiz_usersolutions_question_id_9ed283ac_fk_quiz_questions_id;
 ALTER TABLE IF EXISTS ONLY public.quiz_quizsessionquestion DROP CONSTRAINT IF EXISTS quiz_quizsessionques_quiz_session_id_ede2b4f0_fk_quiz_quiz;
@@ -35,7 +35,7 @@ ALTER TABLE IF EXISTS ONLY public.auth_permission DROP CONSTRAINT IF EXISTS auth
 ALTER TABLE IF EXISTS ONLY public.auth_group_permissions DROP CONSTRAINT IF EXISTS auth_group_permissions_group_id_b120cbf9_fk_auth_group_id;
 ALTER TABLE IF EXISTS ONLY public.auth_group_permissions DROP CONSTRAINT IF EXISTS auth_group_permissio_permission_id_84c5c92e_fk_auth_perm;
 DROP INDEX IF EXISTS public.quiz_usersolutions_user_id_6856aa3f;
-DROP INDEX IF EXISTS public.quiz_usersolutions_selected_answer_id_f5b9f47c;
+DROP INDEX IF EXISTS public.quiz_usersolutions_selected_option_id_f5b9f47c;
 DROP INDEX IF EXISTS public.quiz_usersolutions_quiz_session_id_06ebf55e;
 DROP INDEX IF EXISTS public.quiz_usersolutions_question_id_9ed283ac;
 DROP INDEX IF EXISTS public.quiz_users_email_54010888_like;
@@ -527,7 +527,7 @@ CREATE TABLE public.quiz_usersolutions (
     is_correct boolean NOT NULL,
     answered_at timestamp with time zone NOT NULL,
     question_id bigint NOT NULL,
-    selected_answer_id bigint NOT NULL,
+    selected_option_id bigint NOT NULL,
     user_id bigint NOT NULL,
     attempt_type character varying(20) NOT NULL,
     quiz_session_id bigint
@@ -2738,10 +2738,10 @@ CREATE INDEX quiz_usersolutions_quiz_session_id_06ebf55e ON public.quiz_usersolu
 
 
 --
--- Name: quiz_usersolutions_selected_answer_id_f5b9f47c; Type: INDEX; Schema: public; Owner: postgres
+-- Name: quiz_usersolutions_selected_option_id_f5b9f47c; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE INDEX quiz_usersolutions_selected_answer_id_f5b9f47c ON public.quiz_usersolutions USING btree (selected_answer_id);
+CREATE INDEX quiz_usersolutions_selected_option_id_f5b9f47c ON public.quiz_usersolutions USING btree (selected_option_id);
 
 
 --
@@ -2872,11 +2872,11 @@ ALTER TABLE ONLY public.quiz_usersolutions
 
 
 --
--- Name: quiz_usersolutions quiz_usersolutions_selected_answer_id_f5b9f47c_fk_quiz_choi; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: quiz_usersolutions quiz_usersolutions_selected_option_id_f5b9f47c_fk_quiz_choi; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.quiz_usersolutions
-    ADD CONSTRAINT quiz_usersolutions_selected_answer_id_f5b9f47c_fk_quiz_choi FOREIGN KEY (selected_answer_id) REFERENCES public.quiz_choices(id) DEFERRABLE INITIALLY DEFERRED;
+    ADD CONSTRAINT quiz_usersolutions_selected_option_id_f5b9f47c_fk_quiz_choi FOREIGN KEY (selected_option_id) REFERENCES public.quiz_choices(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --

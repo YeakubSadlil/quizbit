@@ -321,7 +321,7 @@ erDiagram
         int id PK "1"
         int user_id FK "2"
         int question_id FK "1"
-        int selected_answer_id FK "1"
+        int selected_option_id FK "1"
         boolean is_correct "True"
         int quiz_session_id FK
         string attemp_type "Quiz / Practice"

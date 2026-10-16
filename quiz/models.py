@@ -185,7 +185,7 @@ class UserSolutions(models.Model):
     """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     question = models.ForeignKey(Questions, on_delete=models.CASCADE)
-    selected_answer = models.ForeignKey(Choices, on_delete=models.CASCADE)
+    selected_option = models.ForeignKey(Choices, on_delete=models.CASCADE)
     is_correct = models.BooleanField(default=False)
     answered_at = models.DateTimeField(auto_now_add=True)
     quiz_session = models.ForeignKey(QuizSession, on_delete=models.CASCADE, null=True, blank=True)
