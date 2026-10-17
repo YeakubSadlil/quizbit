@@ -327,7 +327,7 @@ class StartQuizView(APIView):
             quiz = models.Quiz.objects.get(id=quiz_id, is_active=True)
 
             # check if there is an active quiz exam session
-            active_session = models.QuizSession.objects.filter(user=request.user, quiz_id=quiz,
+            active_session = models.QuizSession.objects.filter(user=request.user,
                                                                status='in_progress').first()
             if active_session:
                 if active_session.is_time_expired():
@@ -336,31 +336,34 @@ class StartQuizView(APIView):
                     }, status=status.HTTP_400_BAD_REQUEST)
 
                 serializer = QuizSessionSerializer(active_session)
-                return Response(serializer.data, status=status.HTTP_200_OK)
+                return Response({
+                    'msg': 'You have on going quiz and cannot participate another one simultaneously',
+                    'quiz_info': serializer.data
+                },status=status.HTTP_200_OK)
 
             cache_key = f"valid_question_ids:{quiz_id}"
-            vaild_questions = cache.get(cache_key)
+            valid_questions = cache.get(cache_key)
 
-            if not vaild_questions:
+            if not valid_questions:
                 # retrieve all questions related to the quiz id
                 category_list = quiz.categories.all()
                 all_questions = models.Questions.objects.filter(category__in=category_list, is_active=True)
 
                 # only those with at least one choice
-                vaild_questions = list(all_questions.filter(choices__isnull = False).distinct())
+                valid_questions = list(all_questions.filter(choices__isnull = False).distinct())
 
-                cache.set(cache_key, vaild_questions, timeout= 5 * 60)
+                cache.set(cache_key, valid_questions, timeout= 5 * 60)
 
             required = quiz.num_questions
 
-            if len(vaild_questions) < required:
+            if len(valid_questions) < required:
                 return Response({
                     "error": f"Not enough valid questions. "
                              f"Quiz requires {required}, "
-                             f"But only {len(vaild_questions)} questions have choices "
+                             f"But only {len(valid_questions)} questions have choices "
                 }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
-            selected_questions = random.sample(vaild_questions, required)
+            selected_questions = random.sample(valid_questions, required)
 
             # create a new quiz session
             session = models.QuizSession.objects.create(user=request.user, quiz_id=quiz)
@@ -378,6 +381,9 @@ class StartQuizView(APIView):
             return Response({
                 'msg': 'Quiz has been started',
                 'session_id': f'{session.id}',
+                'quiz_start_time': f'{session.start_time}',
+                'quiz_end_time': f'{session.end_time}',
+                'Num. of questions': f'{len(selected_questions)}',
                 'questions': question_serializer.data
             }, status=status.HTTP_201_CREATED)
 
