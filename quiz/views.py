@@ -250,7 +250,7 @@ class QuestionListView(APIView):
                 cache_key = f"question_list_difficulty={difficulty}+category_id={category_id}"
                 cached_data = cache.get(cache_key)
             except Exception as cache_error:
-                print(f"[Warning] Redis not available (GET): {cache_error}")
+                print(f"[Warning] Cache not available (GET): {cache_error}")
 
             if cached_data:
                 return Response(cached_data)
@@ -279,7 +279,7 @@ class QuestionListView(APIView):
             try:
                 cache.set(cache_key, paginated_response, 60 * 5)
             except Exception as cache_error:
-                print(f"[Warning] Redis not available (SET): {cache_error}")
+                print(f"[Warning] Cache not available (SET): {cache_error}")
 
             return Response(paginated_response)
 
@@ -338,14 +338,32 @@ class StartQuizView(APIView):
                 serializer = QuizSessionSerializer(active_session)
                 return Response(serializer.data, status=status.HTTP_200_OK)
 
+            cache_key = f"valid_question_ids:{quiz_id}"
+            vaild_questions = cache.get(cache_key)
+
+            if not vaild_questions:
+                # retrieve all questions related to the quiz id
+                category_list = quiz.categories.all()
+                all_questions = models.Questions.objects.filter(category__in=category_list, is_active=True)
+
+                # only those with at least one choice
+                vaild_questions = list(all_questions.filter(choices__isnull = False).distinct())
+
+                cache.set(cache_key, vaild_questions, timeout= 5 * 60)
+
+            required = quiz.num_questions
+
+            if len(vaild_questions) < required:
+                return Response({
+                    "error": f"Not enough valid questions. "
+                             f"Quiz requires {required}, "
+                             f"But only {len(vaild_questions)} questions have choices "
+                }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+            selected_questions = random.sample(vaild_questions, required)
+
             # create a new quiz session
             session = models.QuizSession.objects.create(user=request.user, quiz_id=quiz)
-
-            # retrieve all questions related to the quiz id
-            category_list = quiz.categories.all()
-            question_list = list(models.Questions.objects.filter(category__in=category_list, is_active=True))
-
-            selected_questions = random.sample(question_list, min(quiz.num_questions, len(question_list)))
 
             for index, question in enumerate(selected_questions):
                 models.QuizSessionQuestion.objects.create(
